@@ -197,4 +197,15 @@
         android:layout_toRightOf="@+id/button9"
         android:layout_toEndOf="@+id/button9"
         android:layout_marginLeft="5dp" />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/textView"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/button8"
+        android:background="#272727"
+        android:layout_marginBottom="12dp" />
+
 </RelativeLayout>

@@ -9,16 +9,14 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
-    private CoordinatorLayout coordinatorLayout;
+public class AlphActivity extends AppCompatActivity {
+    private CoordinatorLayout coordinatorLayout2;
     private TextView textbox;
     private double number = 0;
     private ArrayList<Double> group = new ArrayList<Double>();
@@ -26,11 +24,42 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator);
+        setContentView(R.layout.activity_alph);
+        coordinatorLayout2 = (CoordinatorLayout) findViewById(R.id.coordinator2);
         textbox = (TextView) findViewById(R.id.textView);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        ArrayList<Button> buttonList = new ArrayList<Button>();
+        buttonList.add((Button) findViewById(R.id.buttonAp));
+        buttonList.add((Button) findViewById(R.id.buttonA));
+        buttonList.add((Button) findViewById(R.id.buttonAm));
+        buttonList.add((Button) findViewById(R.id.buttonBp));
+        buttonList.add((Button) findViewById(R.id.buttonB));
+        buttonList.add((Button) findViewById(R.id.buttonBm));
+        buttonList.add((Button) findViewById(R.id.buttonCp));
+        buttonList.add((Button) findViewById(R.id.buttonC));
+        buttonList.add((Button) findViewById(R.id.buttonCm));
+        buttonList.add((Button) findViewById(R.id.buttonD));
+        buttonList.add((Button) findViewById(R.id.buttonF));
+        double attribute = 4.33;
+        for (int i = 0; i < buttonList.size(); i++) {
+            if (i == 3 || i == 6){
+                attribute -= 0.01;
+            }
+            if (attribute < 1.67) {
+                if (attribute < 1.0) {
+                    attribute = 0;
+                } else {
+                    attribute = 1.0;
+                }
+            }
+            buttonList.get(i).setTag(attribute);
+            attribute -= 0.33;
+            attribute = (double)Math.round(attribute*100)/100;
+        }
     }
 
     @Override
@@ -43,66 +72,29 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-        if (id == R.id.action_clear) {
-            textbox.setText("");
-            number = 0;
-            group = new ArrayList<Double>();
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    public void numberClickHandler(View view) {
+    public void alphClickHandler(View view) {
         Button button = (Button) (findViewById(view.getId()));
 //        Snackbar.make(coordinatorLayout, "You clicked " +button.getText(), Snackbar.LENGTH_SHORT).setAction("Action", null).show();
         if (textbox != null) {
-            if (button.getText().toString().contains(".")) {
-                if (textbox.getText().toString().isEmpty()) {
-                    textbox.setText("0" + textbox.getText() + button.getText());
-                } else if (textbox.getText().toString().contains(".")) {
-                    Snackbar.make(coordinatorLayout, "You already entered a decimal", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
-                } else {
-                    textbox.setText("" + textbox.getText() + button.getText());
-                }
-            } else {
-                textbox.setText("" + textbox.getText() + button.getText());
-            }
+            textbox.setText(button.getTag().toString());
         }
+    }
+
+    public void numClickHandler(View view){
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        overridePendingTransition(0,0);
     }
 
     public void clearClickHandler(View view) {
         textbox.setText("");
     }
 
-    public void abcClickHandler(View view){
-        Intent intent = new Intent(this, AlphActivity.class);
-        startActivity(intent);
-        overridePendingTransition(0,0);
-    }
-
     public void addClickHandler(View view) {
         try {
             number = Double.parseDouble(textbox.getText().toString());
         } catch (NumberFormatException e) {
-            Snackbar.make(coordinatorLayout, "Something went wrong.", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
+            Snackbar.make(coordinatorLayout2, "Something went wrong.", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
             return;
         }
         group.add(number);
@@ -116,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 number = Double.parseDouble(textbox.getText().toString());
             } catch (NumberFormatException e) {
-                Snackbar.make(coordinatorLayout, "Something went wrong.", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
+                Snackbar.make(coordinatorLayout2, "Something went wrong.", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
             }
             group.add(number);
         }
@@ -130,4 +122,5 @@ public class MainActivity extends AppCompatActivity {
         number = 0;
         group = new ArrayList<Double>();
     }
+
 }

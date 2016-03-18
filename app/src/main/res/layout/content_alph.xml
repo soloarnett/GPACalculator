@@ -11,20 +11,20 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="thecollegenotebook.com.gpacalculator.MainActivity"
-    tools:showIn="@layout/activity_main">
+    tools:showIn="@layout/activity_alph">
 
     <Button
         android:id="@+id/buttonAm"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="97dp"
-        android:text="7"
-        android:background="@color/colorCalcButton"
-        android:layout_marginRight="5dp"
         android:layout_marginBottom="5dp"
-        android:textSize="18sp"
-        android:onClick="numberClickHandler" />
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="97dp"
+        android:background="@color/colorCalcButton"
+        android:onClick="alphClickHandler"
+        android:text="A-"
+        android:textSize="18sp" />
 
     <Button
         android:id="@+id/buttonA"
@@ -33,24 +33,24 @@
         android:layout_alignTop="@+id/buttonAm"
         android:layout_toEndOf="@+id/buttonAm"
         android:layout_toRightOf="@+id/buttonAm"
-        android:text="8"
         android:background="@color/colorCalcButton"
-        android:textSize="18sp"
-        android:onClick="numberClickHandler" />
+        android:onClick="alphClickHandler"
+        android:text="A"
+        android:textSize="18sp" />
 
     <Button
         android:id="@+id/buttonAp"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_alignTop="@+id/buttonA"
-        android:layout_toEndOf="@+id/buttonA"
-        android:layout_toRightOf="@+id/buttonA"
-        android:text="9"
-        android:background="@color/colorCalcButton"
         android:layout_marginBottom="5sp"
         android:layout_marginLeft="5dp"
-        android:textSize="18sp"
-        android:onClick="numberClickHandler" />
+        android:layout_toEndOf="@+id/buttonA"
+        android:layout_toRightOf="@+id/buttonA"
+        android:background="@color/colorCalcButton"
+        android:onClick="alphClickHandler"
+        android:text="A+"
+        android:textSize="18sp" />
 
     <Button
         android:id="@+id/buttonBm"
@@ -59,12 +59,12 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/buttonAm"
-        android:text="4"
-        android:background="@color/colorCalcButton"
-        android:layout_marginRight="5dp"
         android:layout_marginBottom="5dp"
-        android:textSize="18sp"
-        android:onClick="numberClickHandler" />
+        android:layout_marginRight="5dp"
+        android:background="@color/colorCalcButton"
+        android:onClick="alphClickHandler"
+        android:text="B-"
+        android:textSize="18sp" />
 
     <Button
         android:id="@+id/buttonB"
@@ -73,150 +73,153 @@
         android:layout_alignLeft="@+id/buttonA"
         android:layout_alignStart="@+id/buttonA"
         android:layout_alignTop="@+id/buttonBm"
-        android:text="5"
         android:background="@color/colorCalcButton"
-        android:textSize="18sp"
-        android:onClick="numberClickHandler" />
+        android:onClick="alphClickHandler"
+        android:text="B"
+        android:textSize="18sp" />
 
     <Button
         android:id="@+id/buttonBp"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:text="6"
-        android:background="@color/colorCalcButton"
-        android:layout_alignTop="@+id/buttonB"
         android:layout_alignLeft="@+id/buttonAp"
         android:layout_alignStart="@+id/buttonAp"
-        android:textSize="18sp"
-        android:onClick="numberClickHandler" />
+        android:layout_alignTop="@+id/buttonB"
+        android:background="@color/colorCalcButton"
+        android:onClick="alphClickHandler"
+        android:text="B+"
+        android:textSize="18sp" />
 
     <Button
         android:id="@+id/buttonCm"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:text="1"
-        android:background="@color/colorCalcButton"
-        android:layout_below="@+id/buttonBm"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:textSize="18sp"
-        android:onClick="numberClickHandler" />
+        android:layout_below="@+id/buttonBm"
+        android:background="@color/colorCalcButton"
+        android:onClick="alphClickHandler"
+        android:text="C-"
+        android:textSize="18sp" />
 
     <Button
         android:id="@+id/buttonC"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:text="2"
-        android:background="@color/colorCalcButton"
         android:layout_below="@+id/buttonBm"
         android:layout_toLeftOf="@+id/buttonAp"
         android:layout_toStartOf="@+id/buttonAp"
-        android:textSize="18sp"
-        android:onClick="numberClickHandler" />
+        android:background="@color/colorCalcButton"
+        android:onClick="alphClickHandler"
+        android:text="C"
+        android:textSize="18sp" />
 
     <Button
         android:id="@+id/buttonCp"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:text="3"
-        android:background="@color/colorCalcButton"
-        android:layout_alignTop="@+id/buttonC"
         android:layout_alignLeft="@+id/buttonBp"
         android:layout_alignStart="@+id/buttonBp"
-        android:textSize="18sp"
-        android:onClick="numberClickHandler" />
+        android:layout_alignTop="@+id/buttonC"
+        android:background="@color/colorCalcButton"
+        android:onClick="alphClickHandler"
+        android:text="C+"
+        android:textSize="18sp" />
 
     <Button
         android:id="@+id/buttonD"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:text="0"
-        android:background="@color/colorCalcButton"
-        android:layout_below="@+id/buttonC"
-        android:layout_toLeftOf="@+id/buttonAp"
-        android:layout_marginTop="5dp"
+        android:layout_alignEnd="@+id/buttonCm"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:textSize="18sp"
-        android:onClick="numberClickHandler" />
+        android:layout_alignRight="@+id/buttonCm"
+        android:layout_below="@+id/buttonC"
+        android:layout_marginTop="5dp"
+        android:background="@color/colorCalcButton"
+        android:onClick="alphClickHandler"
+        android:text="D"
+        android:textSize="18sp" />
 
     <Button
-        android:id="@+id/buttonDot"
+        android:id="@+id/buttonNum"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:text="."
-        android:background="#b6b6b6"
-        android:layout_alignBottom="@+id/buttonD"
-        android:layout_alignLeft="@+id/buttonCp"
-        android:layout_alignStart="@+id/buttonCp"
-        android:textSize="18sp"
-        android:onClick="numberClickHandler" />
-
-    <Button
-        android:id="@+id/buttonAlph"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:text="ABC"
-        android:background="#b6b6b6"
-        android:layout_toRightOf="@+id/buttonAp"
-        android:layout_toEndOf="@+id/buttonAp"
         android:layout_alignBottom="@+id/buttonBp"
+        android:layout_alignTop="@+id/buttonBp"
         android:layout_marginLeft="5dp"
-        android:layout_alignTop="@+id/buttonBp" />
+        android:layout_toEndOf="@+id/buttonAp"
+        android:layout_toRightOf="@+id/buttonAp"
+        android:background="#b6b6b6"
+        android:text="123"
+        android:onClick="numClickHandler"/>
 
     <Button
         android:id="@+id/buttonDone"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:text="Done"
+        android:layout_alignEnd="@+id/buttonAdd"
+        android:layout_alignLeft="@+id/buttonCp"
+        android:layout_alignRight="@+id/buttonAdd"
+        android:layout_alignStart="@+id/buttonCp"
+        android:layout_alignTop="@+id/buttonF"
         android:background="#b6b6b6"
-        android:layout_alignBottom="@+id/buttonDot"
-        android:layout_toRightOf="@+id/buttonDot"
-        android:layout_toEndOf="@+id/buttonDot"
-        android:layout_marginLeft="5dp"
-        android:onClick="doneClickHandler" />
+        android:onClick="doneClickHandler"
+        android:text="Done" />
 
     <Button
         android:id="@+id/buttonAdd"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:text="+"
-        android:background="#b6b6b6"
         android:layout_alignTop="@+id/buttonCp"
-        android:layout_toRightOf="@+id/buttonCp"
-        android:layout_toEndOf="@+id/buttonCp"
         android:layout_marginLeft="5dp"
-        android:textSize="18sp"
-        android:onClick="addClickHandler" />
+        android:layout_toEndOf="@+id/buttonCp"
+        android:layout_toRightOf="@+id/buttonCp"
+        android:background="#b6b6b6"
+        android:onClick="addClickHandler"
+        android:text="+"
+        android:textSize="18sp" />
 
     <Button
         android:id="@+id/buttonClear"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:text="CLR"
-        android:background="#b6b6b6"
         android:layout_alignTop="@+id/buttonAp"
-        android:layout_toRightOf="@+id/buttonAp"
-        android:layout_toEndOf="@+id/buttonAp"
         android:layout_marginLeft="5dp"
-        android:onClick="clearClickHandler"/>
+        android:layout_toEndOf="@+id/buttonAp"
+        android:layout_toRightOf="@+id/buttonAp"
+        android:background="#b6b6b6"
+        android:onClick="clearClickHandler"
+        android:text="CLR" />
 
     <TextView
+        android:id="@+id/textView"
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
-        android:id="@+id/textView"
+        android:layout_above="@+id/buttonA"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_above="@+id/buttonA"
-        android:background="#272727"
         android:layout_marginBottom="12dp"
-        android:textColor="#ffffff"
-        android:textSize="50sp"
-        android:textAlignment="gravity"
+        android:background="#272727"
         android:gravity="center|right"
-        android:paddingRight="10dp"
-        android:paddingLeft="10dp"
+        android:maxLength="8"
         android:maxLines="1"
-        android:maxLength="8" />
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:textAlignment="gravity"
+        android:textColor="#ffffff"
+        android:textSize="50sp" />
+
+    <Button
+        android:id="@+id/buttonF"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_alignTop="@+id/buttonD"
+        android:layout_toLeftOf="@+id/buttonAp"
+        android:layout_toStartOf="@+id/buttonAp"
+        android:background="@color/colorCalcButton"
+        android:onClick="alphClickHandler"
+        android:text="F"
+        android:textSize="18sp" />
 
 </RelativeLayout>

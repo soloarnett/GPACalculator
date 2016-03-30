@@ -1,5 +1,6 @@
 package thecollegenotebook.com.gpacalculator;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -17,7 +18,9 @@ import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,7 +37,9 @@ public class MainActivity extends AppCompatActivity {
     private int doneClicked; // creates a variable to monitor when done has been clicked so that a user cannot accidentally miscalculate
     private double scale; // changes formula based on 4.0, 4.33, or 5.0 gpa scales
     private int userNumberNotified; // a variable to let the system know whether or not a user has already been notified of number range limits
-
+    private int startMode;
+    private int stage;
+    private int clearCounter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
 
         // initialize vibrator service
         vibe = (Vibrator) getSystemService(VIBRATOR_SERVICE);
@@ -65,15 +71,25 @@ public class MainActivity extends AppCompatActivity {
         // initializes the userNumberNotified variable to 0. 1 means that they have been notified
         userNumberNotified = 0;
 
+        //initializes the startMode which starts in the normal mode
+        startMode = 0;
+
+        //initializes stage variable to 0
+        stage = 0;
+
+        //initializes the clearCounter variable to 0
+        clearCounter = 0;
+
         // create weight spinner
         final Spinner spinner = (Spinner) findViewById(R.id.number_spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.weight_spinner_values, R.layout.spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+        spinner.setSelection(1);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                vibe();
+//                vibe();
             }
 
             @Override
@@ -90,15 +106,10 @@ public class MainActivity extends AppCompatActivity {
         sc_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                textbox.setText("");
-                number = 0;
-                hours = 0;
-                group = new ArrayList<Double>();
-                userNumberNotified = 0;
+                clearAll();
                 scale = Double.parseDouble(sc_spinner.getSelectedItem().toString());
-                Snackbar.make(coordinatorLayout, "New calculation started", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
-                long[] pattern = {0, 30, 60, 30};
-                vibe.vibrate(pattern, -1);
+//                long[] pattern = {0, 30, 60, 30};
+//                vibe.vibrate(pattern, -1);
             }
 
             @Override
@@ -107,13 +118,79 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // create weight spinner
+        final Spinner st_spinner = (Spinner) findViewById(R.id.start_spinner);
+        ArrayAdapter<CharSequence> st_adapter = ArrayAdapter.createFromResource(this, R.array.start_spinner_values, R.layout.start_spinner_item);
+        st_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        st_spinner.setAdapter(st_adapter);
+//        startMode = st_spinner.getSelectedItemPosition();
+        st_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                vibe();
+//                Snackbar.make(coordinatorLayout, "Normal", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
+                startMode = st_spinner.getSelectedItemPosition();
+                TextView startText = (TextView) findViewById(R.id.textViewStartMode);
+                if (startMode == 0) {
+                    startText.setText("Normal");
+                    clearAll();
+//                    Snackbar.make(coordinatorLayout, "Normal", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
 
+                } else {
+                    startText.setText("Current GPA");
+                    textbox.setText("Enter GPA");
+                    Button doneButton = (Button) findViewById(R.id.buttonDone);
+                    doneButton.setText("Next");
+//                    Snackbar.make(coordinatorLayout, "Current GPA", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+//        st_spinner.setVisibility(View.GONE);
 
     }
+
+
+//    @Override
+//    public void onWindowFocusChanged(boolean hasFocus){
+//        Button button = (Button)findViewById(R.id.button7);
+//        button.setHeight(button.getWidth());
+//        button = (Button)findViewById(R.id.button4);
+//        button.setHeight(button.getWidth());
+//        button = (Button)findViewById(R.id.button1);
+//        button.setHeight(button.getWidth());
+//        button = (Button)findViewById(R.id.buttonDot);
+//        button.setHeight(button.getWidth());
+//        System.out.println("The width of the button is " + button.getWidth());
+//    }
 
     // creates a standard vibrator function
     public void vibe() {
         vibe.vibrate(30);
+    }
+
+    public void clearAll() {
+        textbox.setText("");
+        if (startMode == 1) {
+            textbox.setText("Enter GPA");
+            Button doneButton = (Button) findViewById(R.id.buttonDone);
+            doneButton.setText("Next");
+
+        } else {
+            Button doneButton = (Button) findViewById(R.id.buttonDone);
+            doneButton.setText("Done");
+        }
+        number = 0;
+        hours = 0;
+        stage = 0;
+        clearCounter = 0;
+        group = new ArrayList<Double>();
+        userNumberNotified = 0;
+        Snackbar.make(coordinatorLayout, "New calculation started", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
     }
 
     @Override
@@ -145,12 +222,8 @@ public class MainActivity extends AppCompatActivity {
 //            return true;
 //        }
         if (id == R.id.action_clear) {
-            textbox.setText("");
-            number = 0;
-            hours = 0;
-            group = new ArrayList<Double>();
-            userNumberNotified = 0;
-        }else if (id == R.id.action_feedback) {
+            clearAll();
+        } else if (id == R.id.action_feedback) {
             String[] addresses = {"solomonarnett@gmail.com"};
             composeEmail(addresses, "GPA Calculator Feedback");
         }
@@ -170,15 +243,31 @@ public class MainActivity extends AppCompatActivity {
     public void numberClickHandler(View view) {
         Button button = (Button) (findViewById(view.getId()));
 //        Snackbar.make(coordinatorLayout, "You clicked " +button.getText(), Snackbar.LENGTH_SHORT).setAction("Action", null).show();
-
+        clearCounter = 0;
         if (textbox != null) {
             if (doneClicked == 1) {
                 doneClicked = 0;
                 if (!textbox.getText().toString().isEmpty()) {
-                    textbox.setText("");
-                    Snackbar.make(coordinatorLayout, "New calculation started", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
+                    clearAll();
                 }
             }
+
+            if (startMode == 1) {
+                if (stage == 0) {
+                    if (textbox.getText().toString().contains("Enter GPA")) {
+                        textbox.setText("");
+                    }
+                } else if (stage == 1) {
+                    if (textbox.getText().toString().contains("Enter Hours")) {
+                        textbox.setText("");
+                    }
+                } else if (stage == 3) {
+                    if (textbox.getText().toString().contains("Continue")) {
+                        textbox.setText("");
+                    }
+                }
+            }
+
             if (button.getText().toString().contains(".")) {
                 if (textbox.getText().toString().isEmpty()) {
                     textbox.setText("0" + textbox.getText() + button.getText());
@@ -191,7 +280,7 @@ public class MainActivity extends AppCompatActivity {
                     textbox.setText("" + textbox.getText() + button.getText());
                     vibe();
                 }
-            } else if (textbox.getText().toString().isEmpty()) {
+            } else if ((startMode == 0 || (startMode == 1 && stage == 3)) && textbox.getText().toString().isEmpty()) {
                 if (scale == 4.0 && Double.parseDouble(button.getText().toString()) > 4.0) {
                     if (userNumberNotified != 1) {
                         Snackbar.make(coordinatorLayout, "Numbers greater than 4 will be converted", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
@@ -235,9 +324,15 @@ public class MainActivity extends AppCompatActivity {
 
     // clears textbox on CLR button press
     public void clearClickHandler(View view) {
-        textbox.setText("");
+        if (startMode == 1 && stage > 3) {
+            clearAll();
+        } else if(clearCounter < 1) {
+            textbox.setText("");
+            clearCounter += 1;
+        }else{
+            clearAll();
+        }
         vibe();
-
     }
 
     // switches to AlphActivity
@@ -246,13 +341,13 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, AlphActivity.class);
         startActivity(intent);
         overridePendingTransition(0, 0);
-        vibe.vibrate(100);
+        vibe.vibrate(70);
 
     }
 
     // converts numbers higher than 4.33 to gpa values
     public double numConvert(double num) {
-        if (num > scale){
+        if (num > scale) {
             if (userNumberNotified != 1) {
                 Snackbar.make(coordinatorLayout, "Numbers greater than 4 will be converted", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
                 userNumberNotified = 1;
@@ -399,29 +494,44 @@ public class MainActivity extends AppCompatActivity {
     // adds value taken from textbox
     public void addClickHandler(View view) {
         if (doneClicked == 1) {
-            Snackbar.make(coordinatorLayout, "New calculation started", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
             long[] pattern = {0, 30, 60, 30};
-            textbox.setText("");
+            clearAll();
             doneClicked = 0;
             vibe.vibrate(pattern, -1);
         } else {
-            try {
-                number = Double.parseDouble(textbox.getText().toString());
-            } catch (NumberFormatException e) {
-                Snackbar.make(coordinatorLayout, "Nothing to add", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
-                long[] pattern = {0, 30, 60, 30};
-                vibe.vibrate(pattern, -1);
-                return;
+            if (startMode == 1 && stage < 2) {
+                doneClickHandler(coordinatorLayout);
+            } else {
+                double spinner_value;
+                if (startMode == 0 || (startMode == 1 && stage == 3)) {
+                    Spinner spinner = (Spinner) findViewById(R.id.number_spinner);
+                    spinner_value = Double.parseDouble(spinner.getSelectedItem().toString());
+                    if (!textbox.getText().toString().isEmpty()){
+                        try {
+                            number = Double.parseDouble(textbox.getText().toString());
+                        } catch (NumberFormatException e) {
+                            Snackbar.make(coordinatorLayout, "Nothing to add", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
+                            long[] pattern = {0, 30, 60, 30};
+                            vibe.vibrate(pattern, -1);
+                            return;
+                        }
+                        number = numConvert(number);
+                        hours += spinner_value;
+                    }
+                } else {
+                    spinner_value = hours;
+                    stage += 1;
+                }
+//                System.out.println("The spinner value is " + spinner_value);
+//                System.out.println("The current hours are " + hours);
+
+                number = number * spinner_value;
+                group.add(number);
+                number = 0;
+                textbox.setText("");
+                vibe();
             }
-            number = numConvert(number);
-            Spinner spinner = (Spinner) findViewById(R.id.number_spinner);
-            double spinner_value = Double.parseDouble(spinner.getSelectedItem().toString());
-            number = number * spinner_value;
-            hours += spinner_value;
-            group.add(number);
-            number = 0;
-            textbox.setText("");
-            vibe();
+
         }
 
     }
@@ -429,20 +539,72 @@ public class MainActivity extends AppCompatActivity {
     // final calculation
     // returns gpa value
     public void doneClickHandler(View view) {
-        if (!textbox.getText().toString().isEmpty()) {
-            addClickHandler(coordinatorLayout);
+        if (startMode == 1 && stage < 2) {
+            if (stage == 0) {
+                if (!(textbox.getText().toString().isEmpty())) {
+                    try {
+                        number = Double.parseDouble(textbox.getText().toString());
+                    } catch (NumberFormatException e) {
+                        Snackbar.make(coordinatorLayout, "Enter a GPA value before continuing", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
+                        long[] pattern = {0, 30, 60, 30};
+                        vibe.vibrate(pattern, -1);
+                        return;
+                    }
+                    number = numConvert(number);
+                    stage += 1;
+                    textbox.setText("Enter Hours");
+                } else {
+                    Snackbar.make(coordinatorLayout, "Enter a GPA value before continuing", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
+                    textbox.setText("Enter GPA");
+                }
+
+            } else if (stage == 1) {
+                if (!(textbox.getText().toString().isEmpty())) {
+                    try {
+                        hours = Double.parseDouble(textbox.getText().toString());
+                    } catch (NumberFormatException e) {
+                        Snackbar.make(coordinatorLayout, "Enter your total hours before continuing", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
+                        long[] pattern = {0, 30, 60, 30};
+                        vibe.vibrate(pattern, -1);
+                        return;
+                    }
+                    stage += 1;
+                    Button doneButton = (Button) findViewById(R.id.buttonDone);
+                    doneButton.setText("Done");
+                    addClickHandler(coordinatorLayout);
+                    textbox.setText("Continue");
+                } else {
+                    Snackbar.make(coordinatorLayout, "Enter a your total hours before continuing", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
+                    textbox.setText("Enter Hours");
+                }
+            }
+
+        } else {
+            if (!textbox.getText().toString().isEmpty()) {
+                addClickHandler(coordinatorLayout);
+            }
+            double sum = 0;
+            for (int i = 0; i < group.size(); i++) {
+                sum += group.get(i);
+            }
+            double result = sum / hours;
+            result = (double) Math.round(result * 100) / 100;
+            textbox.setText("" + result);
+            number = 0;
+            hours = 0;
+            group = new ArrayList<Double>();
+            doneClicked = 1;
+            if (startMode == 1 && stage > 2) {
+                if (stage > 3) {
+                    clearAll();
+                    textbox.setText("Enter GPA");
+                } else {
+                    Snackbar.make(coordinatorLayout, "Click CLR or DONE to start a new calculation.", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                    stage += 1;
+                }
+            }
         }
-        double sum = 0;
-        for (int i = 0; i < group.size(); i++) {
-            sum += group.get(i);
-        }
-        double result = sum / hours;
-        result = (double) Math.round(result * 100) / 100;
-        textbox.setText("" + result);
-        number = 0;
-        hours = 0;
-        group = new ArrayList<Double>();
-        doneClicked = 1;
+
         vibe();
     }
 
@@ -456,6 +618,12 @@ public class MainActivity extends AppCompatActivity {
     // spinner on click listener for SCALE button below textbox
     public void onClickScaleListener(View view) {
         Spinner spinner = (Spinner) findViewById(R.id.scale_spinner);
+        spinner.performClick();
+        vibe();
+    }
+
+    public void onStartClickListener(View view) {
+        Spinner spinner = (Spinner) findViewById(R.id.start_spinner);
         spinner.performClick();
         vibe();
     }

@@ -6,8 +6,8 @@
     <string name="title_activity_alph">AlphActivity</string>
     <string name="title_activity_test">TestActivity</string>
     <string-array name="weight_spinner_values">
-        <item>3</item>
         <item>4</item>
+        <item>3</item>
         <item>2</item>
         <item>1</item>
     </string-array>
@@ -15,5 +15,9 @@
         <item>4.0</item>
         <item>4.3</item>
         <item>5.0</item>
+    </string-array>
+    <string-array name="start_spinner_values">
+        <item>Normal</item>
+        <item>Current GPA</item>
     </string-array>
 </resources>

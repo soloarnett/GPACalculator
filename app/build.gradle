@@ -6,10 +6,10 @@ android {
 
     defaultConfig {
         applicationId "thecollegenotebook.com.gpacalculator"
-        minSdkVersion 15
+        minSdkVersion 21
         targetSdkVersion 23
-        versionCode 3
-        versionName "1.11"
+        versionCode 4
+        versionName "1.21"
     }
     buildTypes {
         release {

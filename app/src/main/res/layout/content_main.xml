@@ -35,14 +35,14 @@
                 android:layout_gravity="bottom"
                 android:layout_weight="1"
                 android:background="#272727"
-                android:gravity="center|right"
-                android:maxLength="6"
+                android:gravity="top|right"
+                android:maxLength="11"
                 android:maxLines="1"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
                 android:textAlignment="gravity"
                 android:textColor="#ffffff"
-                android:textSize="50sp" />
+                android:textSize="35sp" />
 
         </TableRow>
 
@@ -62,24 +62,40 @@
             android:layout_height="fill_parent">
 
             <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Start"
+                android:id="@+id/buttonStart"
+                android:layout_column="0"
+                android:onClick="onStartClickListener"
+                android:layout_weight="1"
+                android:backgroundTint="#ffeb3b" />
+
+            <Button
                 android:id="@+id/buttonWeight"
                 style="?android:attr/buttonStyleSmall"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_column="0"
-                android:layout_span="2"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_column="1"
+                android:layout_span="1"
                 android:gravity="center"
                 android:text="Credit Hours"
-                android:onClick="onClickWeightListener" />
+                android:onClick="onClickWeightListener"
+                android:layout_weight="2"
+                android:backgroundTint="#ef6c00" />
 
             <Button
                 style="?android:attr/buttonStyleSmall"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="Scale"
                 android:id="@+id/buttonScale"
                 android:layout_column="2"
-                android:onClick="onClickScaleListener" />
+                android:onClick="onClickScaleListener"
+                android:layout_span="1"
+                android:layout_weight="1"
+                android:backgroundTint="#64dd17" />
 
 
         </TableRow>
@@ -98,36 +114,29 @@
         <TableRow
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:minHeight="70dp">
+            android:minHeight="70dp"
+            android:id="@+id/tableRow1">
 
             <Button
                 android:id="@+id/button7"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_alignParentTop="true"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:layout_margin="0dp"
-                android:layout_marginBottom="0dp"
-                android:layout_marginLeft="0dp"
-                android:layout_marginRight="0dp"
-                android:layout_marginTop="0dp"
                 android:layout_weight="1"
                 android:onClick="numberClickHandler"
                 android:text="7"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:minHeight="80dp" />
 
             <Button
                 android:id="@+id/button8"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:layout_alignTop="@+id/buttonAm"
                 android:layout_gravity="center"
                 android:layout_marginBottom="0dp"
                 android:layout_marginLeft="0dp"
                 android:layout_marginRight="0dp"
                 android:layout_marginTop="0dp"
-                android:layout_toEndOf="@+id/buttonAm"
-                android:layout_toRightOf="@+id/buttonAm"
                 android:layout_weight="1"
                 android:onClick="numberClickHandler"
                 android:text="8"
@@ -137,14 +146,11 @@
                 android:id="@+id/button9"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:layout_alignTop="@+id/buttonA"
                 android:layout_gravity="center"
                 android:layout_marginBottom="0dp"
                 android:layout_marginLeft="0dp"
                 android:layout_marginRight="0dp"
                 android:layout_marginTop="0dp"
-                android:layout_toEndOf="@+id/buttonA"
-                android:layout_toRightOf="@+id/buttonA"
                 android:layout_weight="1"
                 android:onClick="numberClickHandler"
                 android:text="9"
@@ -154,32 +160,28 @@
                 android:id="@+id/buttonClear"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:layout_alignTop="@+id/buttonAp"
                 android:layout_gravity="center"
                 android:layout_marginBottom="0dp"
                 android:layout_marginLeft="0dp"
                 android:layout_marginRight="0dp"
                 android:layout_marginTop="0dp"
-                android:layout_toEndOf="@+id/buttonAp"
-                android:layout_toRightOf="@+id/buttonAp"
                 android:layout_weight="1"
                 android:onClick="clearClickHandler"
                 android:text="CLR"
-                android:backgroundTint="#ef6c00" />
+                android:backgroundTint="#b71c1c"
+                android:textColor="#e0e0e0" />
         </TableRow>
 
         <TableRow
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:minHeight="70dp">
+            android:minHeight="70dp"
+            android:id="@+id/tableRow2">
 
             <Button
                 android:id="@+id/button4"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/buttonAm"
                 android:layout_marginBottom="0dp"
                 android:layout_marginLeft="0dp"
                 android:layout_marginRight="0dp"
@@ -187,15 +189,13 @@
                 android:layout_weight="1"
                 android:onClick="numberClickHandler"
                 android:text="4"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:minHeight="80dp" />
 
             <Button
                 android:id="@+id/button5"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:layout_alignLeft="@+id/buttonA"
-                android:layout_alignStart="@+id/buttonA"
-                android:layout_alignTop="@+id/buttonBm"
                 android:layout_marginBottom="0dp"
                 android:layout_marginLeft="0dp"
                 android:layout_marginRight="0dp"
@@ -209,9 +209,6 @@
                 android:id="@+id/button6"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:layout_alignLeft="@+id/buttonAp"
-                android:layout_alignStart="@+id/buttonAp"
-                android:layout_alignTop="@+id/buttonB"
                 android:layout_marginBottom="0dp"
                 android:layout_marginLeft="0dp"
                 android:layout_marginRight="0dp"
@@ -225,14 +222,10 @@
                 android:id="@+id/buttonAlph"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:layout_alignBottom="@+id/buttonBp"
-                android:layout_alignTop="@+id/buttonBp"
                 android:layout_marginBottom="0dp"
                 android:layout_marginLeft="0dp"
                 android:layout_marginRight="0dp"
                 android:layout_marginTop="0dp"
-                android:layout_toEndOf="@+id/buttonAp"
-                android:layout_toRightOf="@+id/buttonAp"
                 android:layout_weight="1"
                 android:onClick="abcClickHandler"
                 android:text="ABC" />
@@ -242,15 +235,13 @@
         <TableRow
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:minHeight="70dp">
+            android:minHeight="70dp"
+            android:id="@+id/tableRow3">
 
             <Button
                 android:id="@+id/button1"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/buttonBm"
                 android:layout_marginBottom="0dp"
                 android:layout_marginLeft="0dp"
                 android:layout_marginRight="0dp"
@@ -258,19 +249,17 @@
                 android:layout_weight="1"
                 android:onClick="numberClickHandler"
                 android:text="1"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:minHeight="80dp" />
 
             <Button
                 android:id="@+id/button2"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:layout_below="@+id/buttonBm"
                 android:layout_marginBottom="0dp"
                 android:layout_marginLeft="0dp"
                 android:layout_marginRight="0dp"
                 android:layout_marginTop="0dp"
-                android:layout_toLeftOf="@+id/buttonAp"
-                android:layout_toStartOf="@+id/buttonAp"
                 android:layout_weight="1"
                 android:onClick="numberClickHandler"
                 android:text="2"
@@ -280,9 +269,6 @@
                 android:id="@+id/button3"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:layout_alignLeft="@+id/buttonBp"
-                android:layout_alignStart="@+id/buttonBp"
-                android:layout_alignTop="@+id/buttonC"
                 android:layout_marginBottom="0dp"
                 android:layout_marginLeft="0dp"
                 android:layout_marginRight="0dp"
@@ -296,13 +282,10 @@
                 android:id="@+id/buttonAdd"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:layout_alignTop="@+id/buttonCp"
                 android:layout_marginBottom="0dp"
                 android:layout_marginLeft="0dp"
                 android:layout_marginRight="0dp"
                 android:layout_marginTop="0dp"
-                android:layout_toEndOf="@+id/buttonCp"
-                android:layout_toRightOf="@+id/buttonCp"
                 android:layout_weight="1"
                 android:onClick="addClickHandler"
                 android:text="+"
@@ -312,7 +295,8 @@
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:minHeight="70dp">
+            android:minHeight="70dp"
+            android:id="@+id/tableRow4">
 
             <Button
                 android:layout_width="fill_parent"
@@ -324,8 +308,8 @@
                 android:layout_weight="1"
                 android:onClick="numberClickHandler"
                 android:backgroundTint="#616161"
-                android:textColor="#000000"
-                android:layout_marginRight="-2dp" />
+                android:textColor="#e0e0e0"
+                android:minHeight="80dp" />
 
             <Button
                 android:layout_width="fill_parent"
@@ -335,9 +319,7 @@
                 android:layout_column="1"
                 android:textSize="18sp"
                 android:layout_weight="1"
-                android:onClick="numberClickHandler"
-                android:layout_marginLeft="2dp"
-                android:layout_marginRight="-4dp" />
+                android:onClick="numberClickHandler" />
 
             <Button
                 android:layout_width="fill_parent"
@@ -347,74 +329,107 @@
                 android:layout_column="2"
                 android:layout_span="2"
                 android:textSize="18sp"
-                android:layout_weight="1"
+                android:layout_weight="2"
                 android:onClick="doneClickHandler"
                 android:backgroundTint="#616161"
-                android:textColor="#000000"
-                android:layout_marginLeft="4dp" />
+                android:textColor="#e0e0e0" />
         </TableRow>
 
     </TableLayout>
 
     <FrameLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginLeft="10dp">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/textView2"
+        <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:paddingTop="5dp"
-            android:text="Hours"
-            android:textColor="#ef6c00" />
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="10dp">
 
-        <Spinner
-            android:id="@+id/number_spinner"
-            android:spinnerMode="dialog"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:background="@android:drawable/btn_default"
-            android:gravity="center"
-            android:textAlignment="gravity"
-            android:backgroundTint="#00ffffff"
-            android:layout_gravity="center_horizontal" />
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:paddingTop="5dp"
+                android:text="Hours"
+                android:textColor="#ef6c00" />
 
-    </FrameLayout>
+            <Spinner
+                android:id="@+id/number_spinner"
+                android:spinnerMode="dialog"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:background="@android:drawable/btn_default"
+                android:gravity="center"
+                android:textAlignment="gravity"
+                android:backgroundTint="#00ffffff"
+                android:layout_gravity="center_horizontal" />
 
-    <FrameLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginLeft="70dp">
+        </FrameLayout>
 
-        <TextView
-            android:id="@+id/textView3"
+        <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:paddingTop="5dp"
-            android:text="Scale"
-            android:textColor="#64dd17" />
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="70dp">
 
-        <Spinner
-            android:id="@+id/scale_spinner"
-            android:spinnerMode="dialog"
-            android:layout_width="fill_parent"
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:paddingTop="5dp"
+                android:text="Scale"
+                android:textColor="#64dd17" />
+
+            <Spinner
+                android:id="@+id/scale_spinner"
+                android:spinnerMode="dialog"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:background="@android:drawable/btn_default"
+                android:gravity="center"
+                android:textAlignment="gravity"
+                android:backgroundTint="#00ffffff"
+                android:layout_gravity="center_horizontal" />
+
+
+
+        </FrameLayout>
+        <FrameLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:background="@android:drawable/btn_default"
-            android:gravity="center"
-            android:textAlignment="gravity"
-            android:backgroundTint="#00ffffff"
-            android:layout_gravity="center_horizontal" />
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_gravity="bottom|right"
+            android:paddingRight="10dp">
+
+            <TextView
+                android:id="@+id/textViewStartMode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Normal"
+                android:textColor="#ffeb3b" />
+
+            <Spinner
+                android:id="@+id/start_spinner"
+                android:spinnerMode="dialog"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@android:drawable/btn_default"
+                android:gravity="center"
+                android:textAlignment="gravity"
+                android:backgroundTint="#00ffffff"
+                android:layout_gravity="center_horizontal" />
+        </FrameLayout>
 
     </FrameLayout>
-
 
 </RelativeLayout>

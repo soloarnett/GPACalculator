@@ -58,6 +58,7 @@ public class AlphActivity extends AppCompatActivity {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.weight_spinner_values, R.layout.spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+        spinner.setSelection(1);
 
         // create scale spinner
         final Spinner sc_spinner = (Spinner) findViewById(R.id.scale_spinner);
@@ -74,8 +75,8 @@ public class AlphActivity extends AppCompatActivity {
                 scale = Double.parseDouble(sc_spinner.getSelectedItem().toString());
                 assignValues(scale);
                 Snackbar.make(coordinatorLayout2, "New calculation started", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
-                long[] pattern = {0, 30, 60, 30};
-                vibe.vibrate(pattern, -1);
+//                long[] pattern = {0, 30, 60, 30};
+//                vibe.vibrate(pattern, -1);
             }
 
             @Override
@@ -186,7 +187,7 @@ public class AlphActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         overridePendingTransition(0,0);
-        vibe.vibrate(100);
+        vibe.vibrate(70);
     }
 
     public void clearClickHandler(View view) {

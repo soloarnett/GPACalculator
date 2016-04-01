@@ -3,6 +3,7 @@ package thecollegenotebook.com.gpacalculator;
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,6 +25,11 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.ActionViewTarget;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
+
+import java.lang.annotation.Target;
 import java.net.URI;
 import java.util.ArrayList;
 
@@ -40,10 +46,47 @@ public class MainActivity extends AppCompatActivity {
     private int startMode;
     private int stage;
     private int clearCounter;
+    private ShowcaseView showcaseView;
+//    private Target t1, t2, t3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        boolean firstTimeRun = getFirstTimeRun();
+
+        if (firstTimeRun == true) {
+            firstTimeRun();
+        } else {
+            run();
+        }
+
+        storeFirstTimeRun();
+
+    }
+
+
+    private void firstTimeRun(){
+        setContentView(R.layout.activity_tutor);
+        Intent intent = new Intent(this, TutorActivity.class);
+        startActivity(intent);
+    }
+
+    private boolean getFirstTimeRun() {
+        SharedPreferences prefs = getSharedPreferences("First Time Run Value", MODE_PRIVATE);
+        boolean firstTimeRun = prefs.getBoolean("firstRun", true);
+        return firstTimeRun;
+    }
+
+    private void storeFirstTimeRun() {
+        SharedPreferences prefs = getSharedPreferences("First Time Run Value", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("firstRun", false);
+        editor.commit();
+    }
+
+
+    public void run(){
         setContentView(R.layout.activity_main);
 
         // set coordinatorLayout of activity_main
@@ -58,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
 
         // initialize vibrator service
         vibe = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+
 
         // initializes hours variable to 0
         hours = 0.0;
@@ -150,22 +194,20 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-//        st_spinner.setVisibility(View.GONE);
+    }
 
+    //load splash screen
+    public void splashClickListener(){
+        Intent intent = new Intent(this, TutorActivity.class);
+        startActivity(intent);
+        overridePendingTransition(0, 0);
+//        vibe.vibrate(70);
     }
 
 
 //    @Override
 //    public void onWindowFocusChanged(boolean hasFocus){
-//        Button button = (Button)findViewById(R.id.button7);
-//        button.setHeight(button.getWidth());
-//        button = (Button)findViewById(R.id.button4);
-//        button.setHeight(button.getWidth());
-//        button = (Button)findViewById(R.id.button1);
-//        button.setHeight(button.getWidth());
-//        button = (Button)findViewById(R.id.buttonDot);
-//        button.setHeight(button.getWidth());
-//        System.out.println("The width of the button is " + button.getWidth());
+//
 //    }
 
     // creates a standard vibrator function
@@ -226,6 +268,8 @@ public class MainActivity extends AppCompatActivity {
         } else if (id == R.id.action_feedback) {
             String[] addresses = {"solomonarnett@gmail.com"};
             composeEmail(addresses, "GPA Calculator Feedback");
+        } else if (id == R.id.action_help){
+            splashClickListener();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -280,7 +324,7 @@ public class MainActivity extends AppCompatActivity {
                     textbox.setText("" + textbox.getText() + button.getText());
                     vibe();
                 }
-            } else if ((startMode == 0 || (startMode == 1 && stage == 3)) && textbox.getText().toString().isEmpty()) {
+            } else if ((startMode == 0 || (startMode == 1 && (stage == 3 || stage == 0))) && textbox.getText().toString().isEmpty()) {
                 if (scale == 4.0 && Double.parseDouble(button.getText().toString()) > 4.0) {
                     if (userNumberNotified != 1) {
                         Snackbar.make(coordinatorLayout, "Numbers greater than 4 will be converted", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
@@ -518,6 +562,7 @@ public class MainActivity extends AppCompatActivity {
                         number = numConvert(number);
                         hours += spinner_value;
                     }
+                    vibe();
                 } else {
                     spinner_value = hours;
                     stage += 1;
@@ -529,7 +574,7 @@ public class MainActivity extends AppCompatActivity {
                 group.add(number);
                 number = 0;
                 textbox.setText("");
-                vibe();
+
             }
 
         }
@@ -578,10 +623,12 @@ public class MainActivity extends AppCompatActivity {
                     textbox.setText("Enter Hours");
                 }
             }
-
+            vibe();
         } else {
             if (!textbox.getText().toString().isEmpty()) {
                 addClickHandler(coordinatorLayout);
+            }else{
+                vibe();
             }
             double sum = 0;
             for (int i = 0; i < group.size(); i++) {
@@ -604,8 +651,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-
-        vibe();
     }
 
     // spinner on click listener for CHANGE WEIGHT button below textbox

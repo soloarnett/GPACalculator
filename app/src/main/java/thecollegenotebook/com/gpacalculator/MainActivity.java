@@ -41,12 +41,17 @@ public class MainActivity extends AppCompatActivity {
     private Vibrator vibe; // creates variable to interact with system vibrator
     private double hours; // creates variable to capture total number of credit hours
     private int doneClicked; // creates a variable to monitor when done has been clicked so that a user cannot accidentally miscalculate
-    private double scale; // changes formula based on 4.0, 4.33, or 5.0 gpa scales
+    private static double scale; // changes formula based on 4.0, 4.33, or 5.0 gpa scales
     private int userNumberNotified; // a variable to let the system know whether or not a user has already been notified of number range limits
     private int startMode;
     private int stage;
     private int clearCounter;
     private ShowcaseView showcaseView;
+    private String letterGrade = "";
+    private int calcContinue = 0;
+    private int weightClicked = 0;
+    private int startClicked = 0;
+    private double finalResult = 0;
 //    private Target t1, t2, t3;
 
     @Override
@@ -66,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void firstTimeRun(){
+    private void firstTimeRun() {
         setContentView(R.layout.activity_tutor);
         Intent intent = new Intent(this, TutorActivity.class);
         startActivity(intent);
@@ -86,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void run(){
+    public void run() {
         setContentView(R.layout.activity_main);
 
         // set coordinatorLayout of activity_main
@@ -110,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
         doneClicked = 0;
 
         // initializes the scale variable to 4.0
-        scale = 4.0;
+//        scale = 4.0;
 
         // initializes the userNumberNotified variable to 0. 1 means that they have been notified
         userNumberNotified = 0;
@@ -129,7 +134,13 @@ public class MainActivity extends AppCompatActivity {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.weight_spinner_values, R.layout.spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-        spinner.setSelection(1);
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        if (extras != null){
+            spinner.setSelection(getIntent().getExtras().getInt("spinnerHoursPos"));
+        }else{
+            spinner.setSelection(1);
+        }
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -147,18 +158,26 @@ public class MainActivity extends AppCompatActivity {
         ArrayAdapter<CharSequence> sc_adapter = ArrayAdapter.createFromResource(this, R.array.scale_spinner_values, R.layout.scale_spinner_item);
         sc_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sc_spinner.setAdapter(sc_adapter);
+        if (extras != null){
+            sc_spinner.setSelection(getIntent().getExtras().getInt("spinnerScalePos"));
+        }else{
+            sc_spinner.setSelection(0);
+        }
         sc_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                clearAll();
+                if (weightClicked == 0) {
+                    assignIntent();
+                } else {
+                    clearAll();
+                }
                 scale = Double.parseDouble(sc_spinner.getSelectedItem().toString());
-//                long[] pattern = {0, 30, 60, 30};
-//                vibe.vibrate(pattern, -1);
+                weightClicked = 0;
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
+                weightClicked = 0;
             }
         });
 
@@ -175,11 +194,12 @@ public class MainActivity extends AppCompatActivity {
 //                Snackbar.make(coordinatorLayout, "Normal", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
                 startMode = st_spinner.getSelectedItemPosition();
                 TextView startText = (TextView) findViewById(R.id.textViewStartMode);
+                if (startClicked == 1) {
+                    clearAll();
+                    startClicked = 0;
+                }
                 if (startMode == 0) {
                     startText.setText("Normal");
-                    clearAll();
-//                    Snackbar.make(coordinatorLayout, "Normal", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
-
                 } else {
                     startText.setText("Current GPA");
                     textbox.setText("Enter GPA");
@@ -191,24 +211,40 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
+                startClicked = 0;
             }
         });
     }
 
+    public void assignIntent() {
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        if (extras != null){
+            doneClicked = getIntent().getExtras().getInt("doneClicked");
+            calcContinue = getIntent().getExtras().getInt("calcContinue");
+            if (doneClicked == 1) {
+                finalResult = getIntent().getExtras().getDouble("finalResult");
+                letterGrade = letterGrader(finalResult, scale);
+                textbox.setText("" + finalResult);
+            } else if (calcContinue == 1) {
+                group = (ArrayList<Double>) getIntent().getExtras().getSerializable("group");
+                hours = getIntent().getExtras().getDouble("hours");
+                Snackbar.make(coordinatorLayout, "Continue your calculation", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+            } else {
+                clearAll();
+            }
+        }else {
+            clearAll();
+        }
+    }
+
     //load splash screen
-    public void splashClickListener(){
+    public void splashClickListener() {
         Intent intent = new Intent(this, TutorActivity.class);
         startActivity(intent);
         overridePendingTransition(0, 0);
-//        vibe.vibrate(70);
     }
 
-
-//    @Override
-//    public void onWindowFocusChanged(boolean hasFocus){
-//
-//    }
 
     // creates a standard vibrator function
     public void vibe() {
@@ -230,8 +266,12 @@ public class MainActivity extends AppCompatActivity {
         hours = 0;
         stage = 0;
         clearCounter = 0;
+        calcContinue = 0;
+        doneClicked = 0;
+        finalResult = 0;
         group = new ArrayList<Double>();
         userNumberNotified = 0;
+        letterGrade = "";
         Snackbar.make(coordinatorLayout, "New calculation started", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
     }
 
@@ -268,7 +308,7 @@ public class MainActivity extends AppCompatActivity {
         } else if (id == R.id.action_feedback) {
             String[] addresses = {"solomonarnett@gmail.com"};
             composeEmail(addresses, "GPA Calculator Feedback");
-        } else if (id == R.id.action_help){
+        } else if (id == R.id.action_help) {
             splashClickListener();
         }
         return super.onOptionsItemSelected(item);
@@ -370,10 +410,10 @@ public class MainActivity extends AppCompatActivity {
     public void clearClickHandler(View view) {
         if (startMode == 1 && stage > 3) {
             clearAll();
-        } else if(clearCounter < 1) {
+        } else if (clearCounter < 1) {
             textbox.setText("");
             clearCounter += 1;
-        }else{
+        } else {
             clearAll();
         }
         vibe();
@@ -381,11 +421,29 @@ public class MainActivity extends AppCompatActivity {
 
     // switches to AlphActivity
     public void abcClickHandler(View view) {
-
+        if (!textbox.getText().toString().isEmpty()) {
+            if (doneClicked != 1) {
+                addClickHandler(coordinatorLayout);
+            }
+        }
         Intent intent = new Intent(this, AlphActivity.class);
+        intent.putExtra("doneClicked", doneClicked);
+        intent.putExtra("textBox", textbox.getText().toString());
+        intent.putExtra("letterGrade", letterGrade);
+        intent.putExtra("finalResult", finalResult);
+        final Spinner spinner = (Spinner) findViewById(R.id.number_spinner);
+        intent.putExtra("spinnerHoursPos", (Integer) spinner.getSelectedItemPosition());
+        final Spinner spinner_sc = (Spinner) findViewById(R.id.scale_spinner);
+        intent.putExtra("spinnerScalePos", (Integer) spinner_sc.getSelectedItemPosition());
+        intent.putExtra("hours", hours);
+        intent.putExtra("group", group);
+        if (hours > 0) {
+            calcContinue = 1;
+        }
+        intent.putExtra("calcContinue", calcContinue);
         startActivity(intent);
         overridePendingTransition(0, 0);
-        vibe.vibrate(70);
+        vibe();
 
     }
 
@@ -410,35 +468,50 @@ public class MainActivity extends AppCompatActivity {
                                                 if (num > 89) {
                                                     if (num > 92) {
                                                         num = 4.0;
+                                                        if (num > 96) {
+                                                            letterGrade = "A+";
+                                                        } else {
+                                                            letterGrade = "A";
+                                                        }
                                                     } else {
                                                         num = 3.7;
+                                                        letterGrade = "A-";
                                                     }
                                                 } else {
                                                     num = 3.3;
+                                                    letterGrade = "B+";
                                                 }
                                             } else {
                                                 num = 3.0;
+                                                letterGrade = "B";
                                             }
                                         } else {
                                             num = 2.7;
+                                            letterGrade = "B-";
                                         }
                                     } else {
                                         num = 2.3;
+                                        letterGrade = "C+";
                                     }
                                 } else {
                                     num = 2.0;
+                                    letterGrade = "C";
                                 }
                             } else {
                                 num = 1.7;
+                                letterGrade = "C-";
                             }
                         } else {
                             num = 1.3;
+                            letterGrade = "D+";
                         }
                     } else {
                         num = 1.0;
+                        letterGrade = "D";
                     }
                 } else {
                     num = 0.0;
+                    letterGrade = "F";
                 }
             }
         } else if (scale == 4.3) {
@@ -454,35 +527,46 @@ public class MainActivity extends AppCompatActivity {
                                                 if (num > 79) {
                                                     if (num > 89) {
                                                         num = 4.3;
+                                                        letterGrade = "A+";
                                                     } else {
                                                         num = 4.0;
+                                                        letterGrade = "A";
                                                     }
                                                 } else {
                                                     num = 3.7;
+                                                    letterGrade = "A-";
                                                 }
                                             } else {
                                                 num = 3.3;
+                                                letterGrade = "B+";
                                             }
                                         } else {
                                             num = 3.0;
+                                            letterGrade = "B";
                                         }
                                     } else {
                                         num = 2.7;
+                                        letterGrade = "B-";
                                     }
                                 } else {
                                     num = 2.3;
+                                    letterGrade = "C+";
                                 }
                             } else {
                                 num = 2.0;
+                                letterGrade = "C";
                             }
                         } else {
                             num = 1.7;
+                            letterGrade = "D+";
                         }
                     } else {
                         num = 1.3;
+                        letterGrade = "D";
                     }
                 } else {
                     num = 0.0;
+                    letterGrade = "F";
                 }
             }
         } else if (scale == 5.0) {
@@ -498,35 +582,46 @@ public class MainActivity extends AppCompatActivity {
                                                 if (num > 92) {
                                                     if (num > 96) {
                                                         num = 5.0;
+                                                        letterGrade = "A+";
                                                     } else {
                                                         num = 4.8;
+                                                        letterGrade = "A";
                                                     }
                                                 } else {
                                                     num = 4.6;
+                                                    letterGrade = "A-";
                                                 }
                                             } else {
                                                 num = 4.4;
+                                                letterGrade = "B+";
                                             }
                                         } else {
                                             num = 4.2;
+                                            letterGrade = "B";
                                         }
                                     } else {
                                         num = 4.0;
+                                        letterGrade = "B-";
                                     }
                                 } else {
                                     num = 3.8;
+                                    letterGrade = "C+";
                                 }
                             } else {
                                 num = 3.6;
+                                letterGrade = "C";
                             }
                         } else {
                             num = 3.4;
+                            letterGrade = "C-";
                         }
                     } else {
                         num = 3.0;
+                        letterGrade = "C-";
                     }
                 } else {
                     num = 0.0;
+                    letterGrade = "F";
                 }
             }
 
@@ -535,13 +630,146 @@ public class MainActivity extends AppCompatActivity {
         return num;
     }
 
+    public static String letterGrader(double num, double scaleValue) {
+        String numString = ((Double) num).toString();
+        if (scaleValue == 4.0) {
+            if (num > 0.99) {
+                if (num > 1.0) {
+                    if (num > 1.3) {
+                        if (num > 1.7) {
+                            if (num > 2.0) {
+                                if (num > 2.3) {
+                                    if (num > 2.7) {
+                                        if (num > 3.0) {
+                                            if (num > 3.3) {
+                                                if (num > 3.7) {
+                                                    return "A or A+";
+                                                } else {
+                                                    return "A-";
+                                                }
+                                            } else {
+                                                return "B+";
+                                            }
+                                        } else {
+                                            return "B";
+                                        }
+                                    } else {
+                                        return "B-";
+                                    }
+                                } else {
+                                    return "C+";
+                                }
+                            } else {
+                                return "C";
+                            }
+                        } else {
+                            return "C-";
+                        }
+                    } else {
+                        return "D+";
+                    }
+                } else {
+                    return "D";
+                }
+            }else{
+                return "F";
+            }
+        } else if (scaleValue == 4.3) {
+            if (num > 1.29) {
+                if (num > 1.3) {
+                    if (num > 1.7) {
+                        if (num > 2.0) {
+                            if (num > 2.3) {
+                                if (num > 2.7) {
+                                    if (num > 3.0) {
+                                        if (num > 3.3) {
+                                            if (num > 3.7) {
+                                                if (num > 4.0) {
+                                                    return "A+";
+                                                } else {
+                                                    return "A";
+                                                }
+                                            } else {
+                                                return "A-";
+                                            }
+                                        } else {
+                                            return "B+";
+                                        }
+                                    } else {
+                                        return "B";
+                                    }
+                                } else {
+                                    return "B-";
+                                }
+                            } else {
+                                return "C+";
+                            }
+                        } else {
+                            return "C";
+                        }
+                    } else {
+                        return "D+";
+                    }
+                } else {
+                    return "D";
+                }
+            } else {
+                return "F";
+            }
+        } else if (scaleValue == 5.0) {
+            if (num > 2.99) {
+                if (num > 3.0) {
+                    if (num > 3.4) {
+                        if (num > 3.6) {
+                            if (num > 3.8) {
+                                if (num > 4.0) {
+                                    if (num > 4.2) {
+                                        if (num > 4.4) {
+                                            if (num > 4.6) {
+                                                if (num > 4.8) {
+                                                    return "A+";
+                                                } else {
+                                                    return "A";
+                                                }
+                                            } else {
+                                                return "A-";
+                                            }
+                                        } else {
+                                            return "B+";
+                                        }
+                                    } else {
+                                        return "B";
+                                    }
+                                } else {
+                                    return "B-";
+                                }
+                            } else {
+                                return "C+";
+                            }
+                        } else {
+                            return "C";
+                        }
+                    } else {
+                        return "C-";
+                    }
+                } else {
+                    return "C-";
+                }
+            } else {
+                return "F";
+            }
+        } else {
+            return "";
+        }
+    }
+
+
     // adds value taken from textbox
     public void addClickHandler(View view) {
         if (doneClicked == 1) {
-            long[] pattern = {0, 30, 60, 30};
             clearAll();
             doneClicked = 0;
-            vibe.vibrate(pattern, -1);
+            vibe();
         } else {
             if (startMode == 1 && stage < 2) {
                 doneClickHandler(coordinatorLayout);
@@ -550,7 +778,7 @@ public class MainActivity extends AppCompatActivity {
                 if (startMode == 0 || (startMode == 1 && stage == 3)) {
                     Spinner spinner = (Spinner) findViewById(R.id.number_spinner);
                     spinner_value = Double.parseDouble(spinner.getSelectedItem().toString());
-                    if (!textbox.getText().toString().isEmpty()){
+                    if (!textbox.getText().toString().isEmpty()) {
                         try {
                             number = Double.parseDouble(textbox.getText().toString());
                         } catch (NumberFormatException e) {
@@ -582,7 +810,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // final calculation
-    // returns gpa value
+// returns gpa value
     public void doneClickHandler(View view) {
         if (startMode == 1 && stage < 2) {
             if (stage == 0) {
@@ -627,7 +855,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             if (!textbox.getText().toString().isEmpty()) {
                 addClickHandler(coordinatorLayout);
-            }else{
+            } else {
                 vibe();
             }
             double sum = 0;
@@ -636,11 +864,14 @@ public class MainActivity extends AppCompatActivity {
             }
             double result = sum / hours;
             result = (double) Math.round(result * 100) / 100;
+            finalResult = result;
+            letterGrade = letterGrader(finalResult, scale);
             textbox.setText("" + result);
             number = 0;
             hours = 0;
             group = new ArrayList<Double>();
             doneClicked = 1;
+            calcContinue = 0;
             if (startMode == 1 && stage > 2) {
                 if (stage > 3) {
                     clearAll();
@@ -663,12 +894,14 @@ public class MainActivity extends AppCompatActivity {
     // spinner on click listener for SCALE button below textbox
     public void onClickScaleListener(View view) {
         Spinner spinner = (Spinner) findViewById(R.id.scale_spinner);
+        weightClicked = 1;
         spinner.performClick();
         vibe();
     }
 
     public void onStartClickListener(View view) {
         Spinner spinner = (Spinner) findViewById(R.id.start_spinner);
+        startClicked = 1;
         spinner.performClick();
         vibe();
     }

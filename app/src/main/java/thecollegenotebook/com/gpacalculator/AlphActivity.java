@@ -7,6 +7,7 @@ import android.os.Vibrator;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -28,6 +29,11 @@ public class AlphActivity extends AppCompatActivity {
     private double hours; // creates variable to capture total number of credit hours
     private int doneClicked; // creates a variable to monitor when done has been clicked so that a user cannot accidentally miscalculate
     private double scale; // changes formula based on 4.0, 4.33, or 5.0 gpa scales
+    private String letterGrade = "";
+    private int calcContinue = 0;
+    private int clearCounter = 0;
+    private int weightClicked = 0;
+    private double finalResult = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,48 +57,83 @@ public class AlphActivity extends AppCompatActivity {
         doneClicked = 0;
 
         // initializes the scale variable to 4.0
-        scale = 4.0;
+//        scale = 4.0;
 
         // create weight spinner
         final Spinner spinner = (Spinner) findViewById(R.id.number_spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.weight_spinner_values, R.layout.spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-        spinner.setSelection(1);
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        if (extras != null){
+            spinner.setSelection(getIntent().getExtras().getInt("spinnerHoursPos"));
+        }else{
+            spinner.setSelection(1);
+        }
 
         // create scale spinner
         final Spinner sc_spinner = (Spinner) findViewById(R.id.scale_spinner);
         ArrayAdapter<CharSequence> sc_adapter = ArrayAdapter.createFromResource(this, R.array.scale_spinner_values, R.layout.scale_spinner_item);
         sc_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sc_spinner.setAdapter(sc_adapter);
+        if (extras != null){
+            sc_spinner.setSelection(getIntent().getExtras().getInt("spinnerScalePos"));
+        }else{
+            sc_spinner.setSelection(0);
+        }
         sc_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                textbox.setText("");
-                number = 0;
-                hours = 0;
-                group = new ArrayList<Double>();
                 scale = Double.parseDouble(sc_spinner.getSelectedItem().toString());
                 assignValues(scale);
-                Snackbar.make(coordinatorLayout2, "New calculation started", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
-//                long[] pattern = {0, 30, 60, 30};
-//                vibe.vibrate(pattern, -1);
+                if (weightClicked != 1) {
+                    assignIntent();
+                } else {
+                    clearAll();
+                }
+
+                weightClicked = 0;
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
+                weightClicked = 0;
             }
         });
 
 
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
+
+//        assignIntent();
     }
 
-    public void assignValues(double value){
+    public void assignIntent() {
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        if (extras != null){
+            doneClicked = getIntent().getExtras().getInt("doneClicked");
+            calcContinue = getIntent().getExtras().getInt("calcContinue");
+            if (doneClicked == 1) {
+                finalResult = getIntent().getExtras().getDouble("finalResult");
+                letterGrade = MainActivity.letterGrader(finalResult, scale);
+                textbox.setText(letterGrade);
+            } else if (calcContinue == 1) {
+                group = (ArrayList<Double>) getIntent().getExtras().getSerializable("group");
+                hours = getIntent().getExtras().getDouble("hours");
+                Snackbar.make(coordinatorLayout2, "Continue your calculation", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+            } else {
+                clearAll();
+            }
+        }else{
+            clearAll();
+        }
+    }
+
+    public void assignValues(double value) {
         ArrayList<Button> buttonList = new ArrayList<Button>();
         buttonList.add((Button) findViewById(R.id.buttonAp));
         buttonList.add((Button) findViewById(R.id.buttonA));
@@ -108,48 +149,86 @@ public class AlphActivity extends AppCompatActivity {
 
         ArrayList<Double> attribute = new ArrayList<Double>();
 
-        if (value == 4.0){
+        if (value == 4.0) {
             attribute.add(4.0);
-            attribute.add(4.0);
+            ((Button) findViewById(R.id.buttonAp)).setText("A+/A");
             attribute.add(3.7);
+            ((Button) findViewById(R.id.buttonA)).setText("A-");
             attribute.add(3.3);
+            ((Button) findViewById(R.id.buttonAm)).setText("B+");
             attribute.add(3.0);
+            ((Button) findViewById(R.id.buttonBp)).setText("B");
             attribute.add(2.7);
+            ((Button) findViewById(R.id.buttonB)).setText("B-");
             attribute.add(2.3);
+            ((Button) findViewById(R.id.buttonBm)).setText("C+");
             attribute.add(2.0);
+            ((Button) findViewById(R.id.buttonCp)).setText("C");
             attribute.add(1.7);
+            ((Button) findViewById(R.id.buttonC)).setText("C-");
+            attribute.add(1.3);
+            ((Button) findViewById(R.id.buttonCm)).setText("D+");
             attribute.add(1.0);
+            ((Button) findViewById(R.id.buttonD)).setText("D");
             attribute.add(0.0);
-        }else if(value == 4.3){
+            ((Button) findViewById(R.id.buttonF)).setText("E/F");
+        } else if (value == 4.3) {
             attribute.add(4.3);
+            ((Button) findViewById(R.id.buttonAp)).setText("A+");
             attribute.add(4.0);
+            ((Button) findViewById(R.id.buttonA)).setText("A");
             attribute.add(3.7);
+            ((Button) findViewById(R.id.buttonAm)).setText("A-");
             attribute.add(3.3);
+            ((Button) findViewById(R.id.buttonBp)).setText("B+");
             attribute.add(3.0);
+            ((Button) findViewById(R.id.buttonB)).setText("B");
             attribute.add(2.7);
+            ((Button) findViewById(R.id.buttonBm)).setText("B-");
             attribute.add(2.3);
+            ((Button) findViewById(R.id.buttonCp)).setText("C+");
             attribute.add(2.0);
+            ((Button) findViewById(R.id.buttonC)).setText("C");
             attribute.add(1.7);
-            attribute.add(1.0);
+            ((Button) findViewById(R.id.buttonCm)).setText("D+");
+            attribute.add(1.3);
+            ((Button) findViewById(R.id.buttonD)).setText("D");
             attribute.add(0.0);
-        }else{
+            ((Button) findViewById(R.id.buttonF)).setText("F");
+        } else {
             attribute.add(5.0);
+            ((Button) findViewById(R.id.buttonAp)).setText("A+");
             attribute.add(4.8);
+            ((Button) findViewById(R.id.buttonA)).setText("A");
             attribute.add(4.6);
+            ((Button) findViewById(R.id.buttonAm)).setText("A-");
             attribute.add(4.4);
+            ((Button) findViewById(R.id.buttonBp)).setText("B+");
             attribute.add(4.2);
+            ((Button) findViewById(R.id.buttonB)).setText("B");
             attribute.add(4.0);
+            ((Button) findViewById(R.id.buttonBm)).setText("B-");
             attribute.add(3.8);
+            ((Button) findViewById(R.id.buttonCp)).setText("C+");
             attribute.add(3.6);
+            ((Button) findViewById(R.id.buttonC)).setText("C");
             attribute.add(3.4);
+            ((Button) findViewById(R.id.buttonCm)).setText("C-");
             attribute.add(3.0);
+            ((Button) findViewById(R.id.buttonD)).setText("C-2");
             attribute.add(0.0);
+            ((Button) findViewById(R.id.buttonF)).setText("F");
         }
 
         for (int i = 0; i < buttonList.size(); i++) {
             buttonList.get(i).setTag(attribute.get(i));
         }
+//        assignIntent();
     }
+    //    @Override
+//    public void onWindowFocusChanged(boolean hasFocus){
+//
+//    }
 
     // creates a standard vibrator function
     public void vibe() {
@@ -183,25 +262,60 @@ public class AlphActivity extends AppCompatActivity {
         vibe();
     }
 
-    public void numClickHandler(View view){
+    public void numClickHandler(View view) {
+        if (!textbox.getText().toString().isEmpty()) {
+            if (doneClicked != 1) {
+                addClickHandler(coordinatorLayout2);
+            }
+        }
         Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("doneClicked", doneClicked);
+        intent.putExtra("textBox", textbox.getText().toString());
+        intent.putExtra("finalResult", finalResult);
+        final Spinner spinner = (Spinner) findViewById(R.id.number_spinner);
+        intent.putExtra("spinnerHoursPos", (Integer) spinner.getSelectedItemPosition());
+        final Spinner spinner_sc = (Spinner) findViewById(R.id.scale_spinner);
+        intent.putExtra("spinnerScalePos", (Integer) spinner_sc.getSelectedItemPosition());
+        intent.putExtra("hours", hours);
+        intent.putExtra("group", group);
+        if (hours > 0) {
+            calcContinue = 1;
+        }
+        intent.putExtra("calcContinue", calcContinue);
         startActivity(intent);
-        overridePendingTransition(0,0);
-        vibe.vibrate(70);
+        overridePendingTransition(0, 0);
+        vibe();
     }
 
     public void clearClickHandler(View view) {
-        textbox.setText("");
+        if (clearCounter == 1) {
+            clearAll();
+        } else {
+            textbox.setText("");
+            clearCounter += 1;
+        }
         vibe();
+    }
+
+    public void clearAll() {
+        textbox.setText("");
+        number = 0;
+        hours = 0;
+        clearCounter = 0;
+        calcContinue = 0;
+        doneClicked = 0;
+        finalResult = 0;
+        group = new ArrayList<Double>();
+        letterGrade = "";
+        Snackbar.make(coordinatorLayout2, "New calculation started", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
     }
 
     public void addClickHandler(View view) {
         if (doneClicked == 1) {
             Snackbar.make(coordinatorLayout2, "New calculation started", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
-            long[] pattern = {0, 30, 60, 30};
             textbox.setText("");
             doneClicked = 0;
-            vibe.vibrate(pattern, -1);
+            vibe();
         } else {
             try {
                 number = Double.parseDouble(textbox.getText().toString());
@@ -226,6 +340,8 @@ public class AlphActivity extends AppCompatActivity {
     public void doneClickHandler(View view) {
         if (!textbox.getText().toString().isEmpty()) {
             addClickHandler(coordinatorLayout2);
+        }else{
+            vibe();
         }
         double sum = 0;
         for (int i = 0; i < group.size(); i++) {
@@ -233,12 +349,15 @@ public class AlphActivity extends AppCompatActivity {
         }
         double result = sum / hours;
         result = (double) Math.round(result * 100) / 100;
-        textbox.setText("" + result);
+        finalResult = result;
+        String resultToPrint = MainActivity.letterGrader(result, scale);
+        textbox.setText(resultToPrint);
         number = 0;
         hours = 0;
         group = new ArrayList<Double>();
         doneClicked = 1;
-        vibe();
+        calcContinue = 0;
+        clearCounter = 0;
     }
 
     // spinner on click listener for CHANGE WEIGHT button below textbox
@@ -251,6 +370,7 @@ public class AlphActivity extends AppCompatActivity {
     // spinner on click listener for SCALE button below textbox
     public void onClickScaleListener(View view) {
         Spinner spinner = (Spinner) findViewById(R.id.scale_spinner);
+        weightClicked = 1;
         spinner.performClick();
         vibe();
     }

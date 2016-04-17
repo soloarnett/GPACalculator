@@ -633,21 +633,21 @@ public class MainActivity extends AppCompatActivity {
     public static String letterGrader(double num, double scaleValue) {
         String numString = ((Double) num).toString();
         if (scaleValue == 4.0) {
-            if (num > 0.99) {
-                if (num > 1.0) {
-                    if (num > 1.3) {
-                        if (num > 1.7) {
-                            if (num > 2.0) {
-                                if (num > 2.3) {
-                                    if (num > 2.7) {
-                                        if (num > 3.0) {
-                                            if (num > 3.3) {
-                                                if (num > 3.7) {
+            if (num >= 1.0) {
+                if (num >= 1.3) {
+                    if (num >= 1.7) {
+                        if (num >= 2.0) {
+                            if (num >= 2.3) {
+                                if (num >= 2.7) {
+                                    if (num >= 3.0) {
+                                        if (num >= 3.3) {
+                                            if (num >= 3.7) {
+                                                if (num == 4.0){
                                                     return "A or A+";
-                                                } else {
+                                                }else {
                                                     return "A-";
                                                 }
-                                            } else {
+                                            }else{
                                                 return "B+";
                                             }
                                         } else {
@@ -671,20 +671,20 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     return "D";
                 }
-            }else{
+            } else {
                 return "F";
             }
         } else if (scaleValue == 4.3) {
-            if (num > 1.29) {
-                if (num > 1.3) {
-                    if (num > 1.7) {
-                        if (num > 2.0) {
-                            if (num > 2.3) {
-                                if (num > 2.7) {
-                                    if (num > 3.0) {
-                                        if (num > 3.3) {
-                                            if (num > 3.7) {
-                                                if (num > 4.0) {
+            if (num >= 1.3) {
+                if (num >= 1.7) {
+                    if (num >= 2.0) {
+                        if (num >= 2.3) {
+                            if (num >= 2.7) {
+                                if (num >= 3.0) {
+                                    if (num >= 3.3) {
+                                        if (num >= 3.7) {
+                                            if (num >= 4.0) {
+                                                if (num == 4.3){
                                                     return "A+";
                                                 } else {
                                                     return "A";
@@ -717,16 +717,16 @@ public class MainActivity extends AppCompatActivity {
                 return "F";
             }
         } else if (scaleValue == 5.0) {
-            if (num > 2.99) {
-                if (num > 3.0) {
-                    if (num > 3.4) {
-                        if (num > 3.6) {
-                            if (num > 3.8) {
-                                if (num > 4.0) {
-                                    if (num > 4.2) {
-                                        if (num > 4.4) {
-                                            if (num > 4.6) {
-                                                if (num > 4.8) {
+            if (num >= 3.0) {
+                if (num >= 3.4) {
+                    if (num >= 3.6) {
+                        if (num >= 3.8) {
+                            if (num >= 4.0) {
+                                if (num >= 4.2) {
+                                    if (num >= 4.4) {
+                                        if (num >= 4.6) {
+                                            if (num >= 4.8) {
+                                                if (num == 5.0){
                                                     return "A+";
                                                 } else {
                                                     return "A";

@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private int weightClicked = 0;
     private int startClicked = 0;
     private double finalResult = 0;
+    private int vibeValue = 15;
 //    private Target t1, t2, t3;
 
     @Override
@@ -248,7 +249,7 @@ public class MainActivity extends AppCompatActivity {
 
     // creates a standard vibrator function
     public void vibe() {
-        vibe.vibrate(30);
+        vibe.vibrate(vibeValue);
     }
 
     public void clearAll() {

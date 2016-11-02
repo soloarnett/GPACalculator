@@ -4,4 +4,8 @@
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#f74646</color>
     <color name="colorCalcButton">#8e8e8e</color>
+    <color name="colorTextYellow">#ffea00</color>
+    <color name="colorTextWhite">#ffffff</color>
+    <color name="colorTextGreen">#76ff03</color>
+    <color name="colorTextTang">#ff8f00</color>
 </resources>

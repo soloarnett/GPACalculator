@@ -23,21 +23,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AlphActivity"
-            android:configChanges="orientation|screenSize"
-            android:label="@string/app_name"
-            android:parentActivityName=".MainActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="thecollegenotebook.com.gpacalculator.MainActivity" />
-        </activity>
-        <activity
             android:name=".TutorActivity"
             android:label="@string/title_activity_tutor"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -32,14 +34,17 @@ import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import java.lang.annotation.Target;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
+
 
 public class MainActivity extends AppCompatActivity {
-    private CoordinatorLayout coordinatorLayout; // creates variable for calls to activity_main
+    private ConstraintLayout constraintLayout; // creates variable for calls to activity_main
     private TextView textbox; // creates variable to interact with main output screen
     private double number = 0; // creates number variable to interact with most calculation functions
     private ArrayList<Double> group = new ArrayList<Double>(); // creates group array to assign unlimited number of gpa values
     private Vibrator vibe; // creates variable to interact with system vibrator
     private double hours; // creates variable to capture total number of credit hours
+    private double finalHours;
     private int doneClicked; // creates a variable to monitor when done has been clicked so that a user cannot accidentally miscalculate
     private static double scale; // changes formula based on 4.0, 4.33, or 5.0 gpa scales
     private int userNumberNotified; // a variable to let the system know whether or not a user has already been notified of number range limits
@@ -53,6 +58,12 @@ public class MainActivity extends AppCompatActivity {
     private int startClicked = 0;
     private double finalResult = 0;
     private int vibeValue = 15;
+    private int alphMode = 0;
+    private Button alphButton;
+    private double savedGPA;
+    private String savedGPAString;
+    private double savedHours;
+    private String savedHoursString;
 //    private Target t1, t2, t3;
 
     @Override
@@ -63,11 +74,10 @@ public class MainActivity extends AppCompatActivity {
 
         if (firstTimeRun == true) {
             firstTimeRun();
+            storeFirstTimeRun();
         } else {
             run();
         }
-
-        storeFirstTimeRun();
 
     }
 
@@ -91,15 +101,42 @@ public class MainActivity extends AppCompatActivity {
         editor.commit();
     }
 
+    private String getSavedGPA(){
+        SharedPreferences prefs = getSharedPreferences("User Custom Data", MODE_PRIVATE);
+        String gpaValue = prefs.getString("savedGPA", "null");
+        return gpaValue;
+    }
+
+    private void storeSavedGPA(double value){
+        SharedPreferences prefs = getSharedPreferences("User Custom Data", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("savedGPA", ("" + value));
+        editor.commit();
+    }
+
+    private String getSavedHours(){
+        SharedPreferences prefs = getSharedPreferences("User Custom Data", MODE_PRIVATE);
+        String numOfHours = prefs.getString("savedHours", "null");
+        return numOfHours;
+    }
+
+    private void storeSavedHours(double value){
+        SharedPreferences prefs = getSharedPreferences("User Custom Data", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("savedHours", ("" + value));
+        editor.commit();
+    }
+
 
     public void run() {
         setContentView(R.layout.activity_main);
 
         // set coordinatorLayout of activity_main
-        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator);
+        constraintLayout = (ConstraintLayout) findViewById(R.id.constraintLayout);
 
         // initialize textbox
         textbox = (TextView) findViewById(R.id.textView);
+        alphButton = (Button) findViewById(R.id.buttonAlph);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -173,6 +210,11 @@ public class MainActivity extends AppCompatActivity {
                     clearAll();
                 }
                 scale = Double.parseDouble(sc_spinner.getSelectedItem().toString());
+                if (alphMode == 0){
+                    assignValuesNum();
+                }else if (alphMode == 1){
+                    assignValuesAlph(scale);
+                }
                 weightClicked = 0;
             }
 
@@ -201,9 +243,37 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if (startMode == 0) {
                     startText.setText("Normal");
-                } else {
+                } else if (startMode == 1){
                     startText.setText("Current GPA");
-                    textbox.setText("Enter GPA");
+//                    savedGPAString = getSavedGPA();
+//                    if (savedGPAString.equals("null")){
+//                        textbox.setText("Enter GPA");
+//                    }else{
+//                        try {
+//                            savedGPA = Double.parseDouble(savedGPAString);
+//                            number = savedGPA;
+//                            savedHoursString = getSavedHours();
+//                            if (!savedHoursString.equals("null")){
+//                                try{
+//                                    savedHours = Double.parseDouble(savedHoursString);
+//                                    hours = savedHours;
+//                                }catch (NumberFormatException e){
+//                                    Snackbar.make(constraintLayout, "An error has occured. Please report this.", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+//                                    textbox.setText("Error");
+//                                    throw new NumberFormatException();
+//                                }
+//                            }
+//                            number = number * hours;
+//                            group.add(number);
+//                            number = 0;
+//                            stage = 2;
+//                            textbox.setText("Continue");
+//                        }catch (NumberFormatException e){
+//                            Snackbar.make(constraintLayout, "An error has occured. Please report this.", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+//                            textbox.setText("Error");
+//                        }
+//
+//                    }
                     Button doneButton = (Button) findViewById(R.id.buttonDone);
                     doneButton.setText("Next");
 //                    Snackbar.make(coordinatorLayout, "Current GPA", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
@@ -230,13 +300,153 @@ public class MainActivity extends AppCompatActivity {
             } else if (calcContinue == 1) {
                 group = (ArrayList<Double>) getIntent().getExtras().getSerializable("group");
                 hours = getIntent().getExtras().getDouble("hours");
-                Snackbar.make(coordinatorLayout, "Continue your calculation", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                Snackbar.make(constraintLayout, "Continue your calculation", Snackbar.LENGTH_LONG).setAction("Action", null).show();
             } else {
                 clearAll();
             }
         }else {
             clearAll();
         }
+    }
+
+    public void assignValuesNum() {
+        ArrayList<Button> buttonList = new ArrayList<Button>();
+        buttonList.add((Button) findViewById(R.id.button9));
+        buttonList.add((Button) findViewById(R.id.button8));
+        buttonList.add((Button) findViewById(R.id.button7));
+        buttonList.add((Button) findViewById(R.id.button6));
+        buttonList.add((Button) findViewById(R.id.button5));
+        buttonList.add((Button) findViewById(R.id.button4));
+        buttonList.add((Button) findViewById(R.id.button3));
+        buttonList.add((Button) findViewById(R.id.button2));
+        buttonList.add((Button) findViewById(R.id.button1));
+        buttonList.add((Button) findViewById(R.id.buttonDot));
+        buttonList.add((Button) findViewById(R.id.button0));
+
+        ArrayList<Integer> attribute = new ArrayList<Integer>();
+        attribute.add(9);
+        ((Button) findViewById(R.id.button9)).setText("9");
+        attribute.add(8);
+        ((Button) findViewById(R.id.button8)).setText("8");
+        attribute.add(7);
+        ((Button) findViewById(R.id.button7)).setText("7");
+        attribute.add(6);
+        ((Button) findViewById(R.id.button6)).setText("6");
+        attribute.add(5);
+        ((Button) findViewById(R.id.button5)).setText("5");
+        attribute.add(4);
+        ((Button) findViewById(R.id.button4)).setText("4");
+        attribute.add(3);
+        ((Button) findViewById(R.id.button3)).setText("3");
+        attribute.add(2);
+        ((Button) findViewById(R.id.button2)).setText("2");
+        attribute.add(1);
+        ((Button) findViewById(R.id.button1)).setText("1");
+        attribute.add(909);
+        ((Button) findViewById(R.id.buttonDot)).setText(".");
+        attribute.add(0);
+        ((Button) findViewById(R.id.button0)).setText("0");
+
+
+        for (int i = 0; i < buttonList.size(); i++) {
+            buttonList.get(i).setTag(attribute.get(i));
+        }
+        alphButton.setText("ABC");
+//        assignIntent();
+    }
+
+    public void assignValuesAlph(double value) {
+        ArrayList<Button> buttonList = new ArrayList<Button>();
+        buttonList.add((Button) findViewById(R.id.button9));
+        buttonList.add((Button) findViewById(R.id.button8));
+        buttonList.add((Button) findViewById(R.id.button7));
+        buttonList.add((Button) findViewById(R.id.button6));
+        buttonList.add((Button) findViewById(R.id.button5));
+        buttonList.add((Button) findViewById(R.id.button4));
+        buttonList.add((Button) findViewById(R.id.button3));
+        buttonList.add((Button) findViewById(R.id.button2));
+        buttonList.add((Button) findViewById(R.id.button1));
+        buttonList.add((Button) findViewById(R.id.buttonDot));
+        buttonList.add((Button) findViewById(R.id.button0));
+
+        ArrayList<Double> attribute = new ArrayList<Double>();
+
+        if (value == 4.0) {
+            attribute.add(4.0);
+            ((Button) findViewById(R.id.button9)).setText("A+/A");
+            attribute.add(3.7);
+            ((Button) findViewById(R.id.button8)).setText("A-");
+            attribute.add(3.3);
+            ((Button) findViewById(R.id.button7)).setText("B+");
+            attribute.add(3.0);
+            ((Button) findViewById(R.id.button6)).setText("B");
+            attribute.add(2.7);
+            ((Button) findViewById(R.id.button5)).setText("B-");
+            attribute.add(2.3);
+            ((Button) findViewById(R.id.button4)).setText("C+");
+            attribute.add(2.0);
+            ((Button) findViewById(R.id.button3)).setText("C");
+            attribute.add(1.7);
+            ((Button) findViewById(R.id.button2)).setText("C-");
+            attribute.add(1.3);
+            ((Button) findViewById(R.id.button1)).setText("D+");
+            attribute.add(1.0);
+            ((Button) findViewById(R.id.buttonDot)).setText("D");
+            attribute.add(0.0);
+            ((Button) findViewById(R.id.button0)).setText("E/F");
+        } else if (value == 4.3) {
+            attribute.add(4.3);
+            ((Button) findViewById(R.id.button9)).setText("A+");
+            attribute.add(4.0);
+            ((Button) findViewById(R.id.button8)).setText("A");
+            attribute.add(3.7);
+            ((Button) findViewById(R.id.button7)).setText("A-");
+            attribute.add(3.3);
+            ((Button) findViewById(R.id.button6)).setText("B+");
+            attribute.add(3.0);
+            ((Button) findViewById(R.id.button5)).setText("B");
+            attribute.add(2.7);
+            ((Button) findViewById(R.id.button4)).setText("B-");
+            attribute.add(2.3);
+            ((Button) findViewById(R.id.button3)).setText("C+");
+            attribute.add(2.0);
+            ((Button) findViewById(R.id.button2)).setText("C");
+            attribute.add(1.7);
+            ((Button) findViewById(R.id.button1)).setText("D+");
+            attribute.add(1.3);
+            ((Button) findViewById(R.id.buttonDot)).setText("D");
+            attribute.add(0.0);
+            ((Button) findViewById(R.id.button0)).setText("F");
+        } else {
+            attribute.add(5.0);
+            ((Button) findViewById(R.id.button9)).setText("A+");
+            attribute.add(4.8);
+            ((Button) findViewById(R.id.button8)).setText("A");
+            attribute.add(4.6);
+            ((Button) findViewById(R.id.button7)).setText("A-");
+            attribute.add(4.4);
+            ((Button) findViewById(R.id.button6)).setText("B+");
+            attribute.add(4.2);
+            ((Button) findViewById(R.id.button5)).setText("B");
+            attribute.add(4.0);
+            ((Button) findViewById(R.id.button4)).setText("B-");
+            attribute.add(3.8);
+            ((Button) findViewById(R.id.button3)).setText("C+");
+            attribute.add(3.6);
+            ((Button) findViewById(R.id.button2)).setText("C");
+            attribute.add(3.4);
+            ((Button) findViewById(R.id.button1)).setText("C-");
+            attribute.add(3.0);
+            ((Button) findViewById(R.id.buttonDot)).setText("C-2");
+            attribute.add(0.0);
+            ((Button) findViewById(R.id.button0)).setText("F");
+        }
+
+        for (int i = 0; i < buttonList.size(); i++) {
+            buttonList.get(i).setTag(attribute.get(i));
+        }
+        alphButton.setText("123");
+//        assignIntent();
     }
 
     //load splash screen
@@ -253,6 +463,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void clearAll() {
+        Button addButton = (Button) findViewById(R.id.buttonAdd);
+        addButton.setText("+");
         textbox.setText("");
         if (startMode == 1) {
             textbox.setText("Enter GPA");
@@ -270,10 +482,14 @@ public class MainActivity extends AppCompatActivity {
         calcContinue = 0;
         doneClicked = 0;
         finalResult = 0;
+        finalHours = 0;
         group = new ArrayList<Double>();
         userNumberNotified = 0;
         letterGrade = "";
-        Snackbar.make(coordinatorLayout, "New calculation started", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
+        Snackbar.make(constraintLayout, "New calculation started", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
+        if (startMode == 1){
+            textbox.setText("Enter GPA");
+        }
     }
 
     @Override
@@ -325,8 +541,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public String textboxString(){
+        return textbox.getText().toString();
+    }
+
     public void numberClickHandler(View view) {
         Button button = (Button) (findViewById(view.getId()));
+        String buttonTagString = button.getTag().toString();
 //        Snackbar.make(coordinatorLayout, "You clicked " +button.getText(), Snackbar.LENGTH_SHORT).setAction("Action", null).show();
         clearCounter = 0;
         if (textbox != null) {
@@ -339,69 +560,92 @@ public class MainActivity extends AppCompatActivity {
 
             if (startMode == 1) {
                 if (stage == 0) {
-                    if (textbox.getText().toString().contains("Enter GPA")) {
+                    if (textboxString().contains("Enter GPA")) {
                         textbox.setText("");
                     }
                 } else if (stage == 1) {
-                    if (textbox.getText().toString().contains("Enter Hours")) {
+                    if (textboxString().contains("Enter Hours")) {
                         textbox.setText("");
                     }
-                } else if (stage == 3) {
-                    if (textbox.getText().toString().contains("Continue")) {
+                } else if (stage == 2 || stage == 3) {
+                    if (textboxString().contains("Continue")) {
                         textbox.setText("");
                     }
                 }
             }
 
-            if (button.getText().toString().contains(".")) {
-                if (textbox.getText().toString().isEmpty()) {
-                    textbox.setText("0" + textbox.getText() + button.getText());
+
+            //check for decimal entry
+            // if decimal is pressed without number infront automatically enter 0 followed by decimal "."
+            if (buttonTagString.contains("909")){ //button.getText().toString().contains(".")) {
+                if (textboxString().isEmpty()) {
+                    textbox.setText("0" + textboxString() + ".");
                     vibe();
-                } else if (textbox.getText().toString().contains(".")) {
-                    Snackbar.make(coordinatorLayout, "You already entered a decimal", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
+                } else if (textboxString().contains(".")) {
+                    Snackbar.make(constraintLayout, "You already entered a decimal", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
                     long[] pattern = {0, 30, 60, 30};
                     vibe.vibrate(pattern, -1);
                 } else {
-                    textbox.setText("" + textbox.getText() + button.getText());
+                    textbox.setText("" + textboxString() + ".");
                     vibe();
                 }
-            } else if ((startMode == 0 || (startMode == 1 && (stage == 3 || stage == 0))) && textbox.getText().toString().isEmpty()) {
-                if (scale == 4.0 && Double.parseDouble(button.getText().toString()) > 4.0) {
+            } else if ((startMode == 0 || (startMode == 1 && (stage == 3 || stage == 0))) && textboxString().isEmpty()) {
+                if (scale == 4.0 && Double.parseDouble(buttonTagString) > 4.0) {
                     if (userNumberNotified != 1) {
-                        Snackbar.make(coordinatorLayout, "Numbers greater than 4 will be converted", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
+                        Snackbar.make(constraintLayout, "Numbers greater than 4 will be converted", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
                         userNumberNotified = 1;
                         long[] pattern = {0, 30, 60, 30};
                         vibe.vibrate(pattern, -1);
                     } else {
                         vibe();
                     }
-                    textbox.setText("" + textbox.getText() + button.getText());
-                } else if (scale == 4.3 && Double.parseDouble(button.getText().toString()) > 4.3) {
+                    if (alphMode == 1){
+                        textbox.setText("" + buttonTagString);
+                    }else if (alphMode == 0){
+                        textbox.setText("" + textboxString() + buttonTagString);
+                    }
+                } else if (scale == 4.3 && Double.parseDouble(buttonTagString) > 4.3) {
                     if (userNumberNotified != 1) {
-                        Snackbar.make(coordinatorLayout, "Numbers greater than 4.3 will be converted", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
+                        Snackbar.make(constraintLayout, "Numbers greater than 4.3 will be converted", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
                         userNumberNotified = 1;
                         long[] pattern = {0, 30, 60, 30};
                         vibe.vibrate(pattern, -1);
                     } else {
                         vibe();
                     }
-                    textbox.setText("" + textbox.getText() + button.getText());
-                } else if (scale == 5.0 && Double.parseDouble(button.getText().toString()) > 5.0) {
+                    if (alphMode == 1){
+                        textbox.setText("" + buttonTagString);
+                    }else if (alphMode == 0){
+                        textbox.setText("" + textboxString() + buttonTagString);
+                    }
+                } else if (scale == 5.0 && Double.parseDouble(buttonTagString) > 5.0) {
                     if (userNumberNotified != 1) {
-                        Snackbar.make(coordinatorLayout, "Numbers greater than 5 will be converted", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
+                        Snackbar.make(constraintLayout, "Numbers greater than 5 will be converted", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
                         userNumberNotified = 1;
                         long[] pattern = {0, 30, 60, 30};
                         vibe.vibrate(pattern, -1);
                     } else {
                         vibe();
                     }
-                    textbox.setText("" + textbox.getText() + button.getText());
+                    if (alphMode == 1){
+                        textbox.setText("" + buttonTagString);
+                    }else if (alphMode == 0){
+                        textbox.setText("" + textboxString() + buttonTagString);
+                    }
                 } else {
-                    textbox.setText("" + textbox.getText() + button.getText());
+                    if (alphMode == 1){
+                        textbox.setText("" + buttonTagString);
+                    }else if (alphMode == 0){
+                        textbox.setText("" + textboxString() + buttonTagString);
+                    }
                     vibe();
                 }
             } else {
-                textbox.setText("" + textbox.getText() + button.getText());
+                if (alphMode == 1){
+                    textbox.setText("" + buttonTagString);
+                }else if (alphMode == 0){
+                    textbox.setText("" + textboxString() + buttonTagString);
+                }
                 vibe();
             }
         }
@@ -422,37 +666,51 @@ public class MainActivity extends AppCompatActivity {
 
     // switches to AlphActivity
     public void abcClickHandler(View view) {
-        if (!textbox.getText().toString().isEmpty()) {
-            if (doneClicked != 1) {
-                addClickHandler(coordinatorLayout);
+//        if (!textbox.getText().toString().isEmpty()) {
+//            if (doneClicked != 1) {
+//                addClickHandler(constraintLayout);
+//            }
+//        }
+//        Intent intent = new Intent(this, AlphActivity.class);
+//        intent.putExtra("doneClicked", doneClicked);
+//        intent.putExtra("textBox", textbox.getText().toString());
+//        intent.putExtra("letterGrade", letterGrade);
+//        intent.putExtra("finalResult", finalResult);
+//        final Spinner spinner = (Spinner) findViewById(R.id.number_spinner);
+//        intent.putExtra("spinnerHoursPos", (Integer) spinner.getSelectedItemPosition());
+//        final Spinner spinner_sc = (Spinner) findViewById(R.id.scale_spinner);
+//        intent.putExtra("spinnerScalePos", (Integer) spinner_sc.getSelectedItemPosition());
+//        intent.putExtra("hours", hours);
+//        intent.putExtra("group", group);
+//        if (hours > 0) {
+//            calcContinue = 1;
+//        }
+//        intent.putExtra("calcContinue", calcContinue);
+//        startActivity(intent);
+//        overridePendingTransition(0, 0);
+        if (startMode == 1  && stage == 1){
+
+        }else{
+            if(alphMode == 0){
+                alphMode = 1;
+                assignValuesAlph(scale);
+            }else if(alphMode == 1){
+                alphMode = 0;
+                assignValuesNum();
             }
         }
-        Intent intent = new Intent(this, AlphActivity.class);
-        intent.putExtra("doneClicked", doneClicked);
-        intent.putExtra("textBox", textbox.getText().toString());
-        intent.putExtra("letterGrade", letterGrade);
-        intent.putExtra("finalResult", finalResult);
-        final Spinner spinner = (Spinner) findViewById(R.id.number_spinner);
-        intent.putExtra("spinnerHoursPos", (Integer) spinner.getSelectedItemPosition());
-        final Spinner spinner_sc = (Spinner) findViewById(R.id.scale_spinner);
-        intent.putExtra("spinnerScalePos", (Integer) spinner_sc.getSelectedItemPosition());
-        intent.putExtra("hours", hours);
-        intent.putExtra("group", group);
-        if (hours > 0) {
-            calcContinue = 1;
-        }
-        intent.putExtra("calcContinue", calcContinue);
-        startActivity(intent);
-        overridePendingTransition(0, 0);
+
         vibe();
 
     }
+
+
 
     // converts numbers higher than 4.33 to gpa values
     public double numConvert(double num) {
         if (num > scale) {
             if (userNumberNotified != 1) {
-                Snackbar.make(coordinatorLayout, "Numbers greater than 4 will be converted", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
+                Snackbar.make(constraintLayout, "Numbers greater than 4 will be converted", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
                 userNumberNotified = 1;
             }
         }
@@ -767,46 +1025,55 @@ public class MainActivity extends AppCompatActivity {
 
     // adds value taken from textbox
     public void addClickHandler(View view) {
-        if (doneClicked == 1) {
-            clearAll();
-            doneClicked = 0;
-            vibe();
-        } else {
-            if (startMode == 1 && stage < 2) {
-                doneClickHandler(coordinatorLayout);
+        Button addButton = (Button) findViewById(R.id.buttonAdd);
+        if (addButton.getText().equals("Save")){
+            storeSavedGPA(finalResult);
+            storeSavedHours(finalHours);
+            Snackbar.make(constraintLayout, "A GPA of " + finalResult + " over " + finalHours + " has been saved.", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
+            addButton.setText("+");
+        }else{
+            if (doneClicked == 1) {
+                clearAll();
+                doneClicked = 0;
+                vibe();
             } else {
-                double spinner_value;
-                if (startMode == 0 || (startMode == 1 && stage == 3)) {
-                    Spinner spinner = (Spinner) findViewById(R.id.number_spinner);
-                    spinner_value = Double.parseDouble(spinner.getSelectedItem().toString());
-                    if (!textbox.getText().toString().isEmpty()) {
-                        try {
-                            number = Double.parseDouble(textbox.getText().toString());
-                        } catch (NumberFormatException e) {
-                            Snackbar.make(coordinatorLayout, "Nothing to add", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
-                            long[] pattern = {0, 30, 60, 30};
-                            vibe.vibrate(pattern, -1);
-                            return;
-                        }
-                        number = numConvert(number);
-                        hours += spinner_value;
-                    }
-                    vibe();
+                if (startMode == 1 && stage < 2) {
+                    doneClickHandler(constraintLayout);
                 } else {
-                    spinner_value = hours;
-                    stage += 1;
-                }
+                    double spinner_value;
+                    if (startMode == 0 || (startMode == 1 && stage == 3)) {
+                        Spinner spinner = (Spinner) findViewById(R.id.number_spinner);
+                        spinner_value = Double.parseDouble(spinner.getSelectedItem().toString());
+                        if (!textbox.getText().toString().isEmpty()) {
+                            try {
+                                number = Double.parseDouble(textbox.getText().toString());
+                            } catch (NumberFormatException e) {
+                                Snackbar.make(constraintLayout, "Nothing to add", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
+                                long[] pattern = {0, 30, 60, 30};
+                                vibe.vibrate(pattern, -1);
+                                return;
+                            }
+                            number = numConvert(number);
+                            hours += spinner_value;
+                        }
+                        vibe();
+                    } else {
+                        spinner_value = hours;
+                        stage += 1;
+                    }
 //                System.out.println("The spinner value is " + spinner_value);
 //                System.out.println("The current hours are " + hours);
 
-                number = number * spinner_value;
-                group.add(number);
-                number = 0;
-                textbox.setText("");
+                    number = number * spinner_value;
+                    group.add(number);
+                    number = 0;
+                    textbox.setText("");
+
+                }
 
             }
-
         }
+
 
     }
 
@@ -819,16 +1086,20 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         number = Double.parseDouble(textbox.getText().toString());
                     } catch (NumberFormatException e) {
-                        Snackbar.make(coordinatorLayout, "Enter a GPA value before continuing", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
+                        Snackbar.make(constraintLayout, "Enter a GPA value before continuing", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
                         long[] pattern = {0, 30, 60, 30};
                         vibe.vibrate(pattern, -1);
                         return;
                     }
                     number = numConvert(number);
                     stage += 1;
+                    assignValuesNum();
+                    alphMode = 0;
                     textbox.setText("Enter Hours");
+
+
                 } else {
-                    Snackbar.make(coordinatorLayout, "Enter a GPA value before continuing", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
+                    Snackbar.make(constraintLayout, "Enter a GPA value before continuing", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
                     textbox.setText("Enter GPA");
                 }
 
@@ -837,7 +1108,7 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         hours = Double.parseDouble(textbox.getText().toString());
                     } catch (NumberFormatException e) {
-                        Snackbar.make(coordinatorLayout, "Enter your total hours before continuing", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
+                        Snackbar.make(constraintLayout, "Enter your total hours before continuing", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
                         long[] pattern = {0, 30, 60, 30};
                         vibe.vibrate(pattern, -1);
                         return;
@@ -845,17 +1116,20 @@ public class MainActivity extends AppCompatActivity {
                     stage += 1;
                     Button doneButton = (Button) findViewById(R.id.buttonDone);
                     doneButton.setText("Done");
-                    addClickHandler(coordinatorLayout);
+                    addClickHandler(constraintLayout);
                     textbox.setText("Continue");
                 } else {
-                    Snackbar.make(coordinatorLayout, "Enter a your total hours before continuing", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
+                    Snackbar.make(constraintLayout, "Enter a your total hours before continuing", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
                     textbox.setText("Enter Hours");
                 }
             }
             vibe();
+        }else if(startMode == 1 && stage == 4){
+            clearAll();
         } else {
+
             if (!textbox.getText().toString().isEmpty()) {
-                addClickHandler(coordinatorLayout);
+                addClickHandler(constraintLayout);
             } else {
                 vibe();
             }
@@ -866,6 +1140,7 @@ public class MainActivity extends AppCompatActivity {
             double result = sum / hours;
             result = (double) Math.round(result * 100) / 100;
             finalResult = result;
+            finalHours = hours;
             letterGrade = letterGrader(finalResult, scale);
             textbox.setText("" + result);
             number = 0;
@@ -873,15 +1148,20 @@ public class MainActivity extends AppCompatActivity {
             group = new ArrayList<Double>();
             doneClicked = 1;
             calcContinue = 0;
-            if (startMode == 1 && stage > 2) {
-                if (stage > 3) {
-                    clearAll();
-                    textbox.setText("Enter GPA");
-                } else {
-                    Snackbar.make(coordinatorLayout, "Click CLR or DONE to start a new calculation.", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+            if (startMode == 1 && stage > 1) {
+                if (stage > 2) {
+                    Snackbar.make(constraintLayout, "Click CLR or DONE to start a new calculation.", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+//                    Button textButton = (Button) findViewById(R.id.buttonAdd);
+//                    textButton.setText("Save");
                     stage += 1;
+
+                } else if(stage > 3) {
+//                    clearAll();
+                    textbox.setText("Enter GPA");
+//                    Snackbar.make(constraintLayout, "Reached this point", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 }
             }
+
         }
     }
 

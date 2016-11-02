@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="buttonStartSelector" type="id">buttonStartSelector</item>
+    <item name="buttonCreditHoursSelector" type="id">buttonCreditHoursSelector</item>
+    <item name="buttonScaleSelector" type="id">buttonScaleSelector</item>
+</resources>
